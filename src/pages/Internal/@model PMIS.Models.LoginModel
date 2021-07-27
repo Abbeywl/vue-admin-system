@@ -1,0 +1,539 @@
+@model PMIS.Models.LoginModel
+@using PMIS.Extensions
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Configuration
+@inject IHtmlLocalizer<Language> Language
+@inject IConfiguration Configuration
+@{
+    var title = Configuration["AppSettings:WebTitle"];
+    Layout = "";
+    var isALi = bool.Parse(Configuration["AppSettings:IsAli"]);
+    var IsTencent = bool.Parse(Configuration["AppSettings:IsTencent"]);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>@title</title>
+    <link rel="shortcut icon" href="@Url.Content("~/favicon.ico")" />
+    <link href="~/bundles/bimgoindexnew.css" rel="stylesheet" />
+    <style>
+
+        @{
+            if (this.Context.Request.Cookies["_culture"] != null)
+            {
+                var culture = this.Context.Request.Cookies["_culture"];
+                if (culture == "zh-TW")
+                {
+                    @Html.Raw("body,td,th, a, h1, h2, h3, h4, h5, h6, p, pre { font-family: 'Arial', 'sans-serif', '微軟正黑體', '黑体';} /* 繁體優先 */")
+                }
+                else if (culture == "zh-CN")
+                {
+                    @Html.Raw(" body,td,th, a, h1, h2, h3, h4, h5, h6, p, pre { font-family: 'Arial', 'sans-serif', '黑体', '微軟正黑體';} /* 簡體優先 */")
+                }
+            }
+        }
+         .form-group{
+             border: none;
+            background: none;
+         }
+
+
+    </style>
+    <script>
+        if (window.self != window.top) {
+            if (window.self.stop)
+                window.self.stop();
+            window.top.location = '@Url.Action("Login", "Account")';
+        }
+    </script>
+</head>
+
+<body>
+
+    <!-- contact login 判断-->
+    @{
+        if (bool.Parse(Configuration["AppSettings:IsAli"]))
+        {
+            <link href="~/Content/bimgoAliCss/bimgoAli_Login.css" rel="stylesheet" />
+            <section id="section-qa" class="section appear clearfix">
+                <div class="container">
+                    <div class="row animated bounceInUp animation-slow-08">
+                        <img class="qrCode" id="qrCode" src="~/Content/site/images/ali/qrCode.png" title="@Language["DownloadApp"].Value" />
+                        <div class="height_100" id="tabs">
+                            <div class="Ali_login_top">
+                                <ul class="Ali_login_ul">
+                                    <li class="">
+                                        <div class="Ali_active login_top_left" id="ali_user">
+                                            <img class="usericon" src=@Url.Content("~/Content/site/images/ali/user_active.png")><span>@Language["UserPasswordLogin"].Value</span>
+                                        </div>
+                                    </li>
+                                    <li class="">
+                                        <div class="login_top_right" id="ali_dingtalk">
+                                            <img class="usericon" src=@Url.Content("~/Content/site/images/ali/ding.png")><span>@Language["DingTalkLogin"].Value</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div id="username_login" class="Ali_login_boot">
+                                <div class="row">
+                                    <div class="ali_logobox">
+                                        <img class="" src=@Url.Content("~/Content/site/images/ali/ali_logo.png")>
+                                    </div>
+                                </div>
+                                <div class="cform" id="contact-form">
+                                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, true, new { @class = "checkSubmint" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <div class="form-group ali_form_group">
+                                            <div class="input_box">
+                                                @Html.TextBoxFor(m => m.UserName, new { @class = "user_right myright", placeholder = Language["UserName"].Value })
+                                            </div>
+                                            <div class="input_box">
+                                                @Html.PasswordFor(m => m.Password, new
+                                           {
+                                               @class = "pass_right myright",
+                                               placeholder = Language["Password"].Value
+                                           })
+                                            </div>
+                                            <div class="input_box">
+                                                <input id="CaptchaValue" name="CaptchaValue" type="text" class="myright" placeholder="@Language["Captcha"].Value" autocomplete="off" />
+                                            </div>
+                                            <img id="imgCaptcha" style="cursor: pointer;" src="@Url.Action("GetCaptcha", "Account")" alt="@Language["Captcha"].Value" />
+                                        </div>
+                                        <div style="height:.4rem"> @Html.ValidationSummary()</div>
+
+                                        <button class="btn btn-lg btn-block mar-bot20 height60 ali_login_button" type="submit">@Language["LogIn"].Value</button>
+                                        <div class="checkbox mar-bot20">
+
+                                            <label class="myleft">
+                                                @Html.CheckBoxFor(m => m.RememberMe, new { @class = "" })@Language["Rememberme"].Value
+                                            </label>
+                                            <a class="myright" href="#" id="forgetPasswd">@Language["ForgetPasswd"].Value</a>
+                                        </div>
+                                    }
+
+
+                                </div>
+                            </div>
+                            <div id="login_container" class="login_container" style="display:none">
+
+                            </div>
+
+                        </div>
+                        <div id="qrCodeContainer" class="height_100 qrCodeContainer" style="display:none">
+                            <h3 class="row col-lg-12 col-md-12 col-sm-12 nopadding nomargin ">@Language["WelcomUseApp"].Value</h3>
+                            <div class="row col-lg-12 col-md-12 col-sm-12  nomargin">
+                                <div class="col-lg-6 col-md-6 col-sm-6 nopadding nomargin qrCodeBotm">
+                                    <div>
+                                        <div class="iosIcon"></div>
+                                        <span>iOS @Language["VersionShort"].Value</span>
+                                    </div>
+                                    <div class="qrCodeImgBox">
+                                        <div id="iosQrcode" class="qrcode" style="position:relative;">
+                                            <img id='qrCodeIco' class="qrCodeIco" src="~/Content/site/images/ali/alibaba.png" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 nopadding nomargin qrCodeBotm">
+                                    <div>
+                                        <div class="androidIcon"></div>
+                                        <span>Android @Language["VersionShort"].Value</span>
+                                    </div>
+                                    <div class="qrCodeImgBox">
+                                        <div id="qrcode" class="qrcode" style="position:relative;">
+                                            <img id='qrCodeIco' class="qrCodeIco" src="~/Content/site/images/ali/alibaba.png" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        }
+        else if (!string.IsNullOrEmpty(Configuration["AppSettings:IsTencent"]) && bool.Parse(Configuration["AppSettings:IsTencent"]))
+        {
+            <link href="~/Content/TencentCss/tencent_login.css" rel="stylesheet" />
+            <section id="section-qa" class="section appear clearfix">
+                <div class="container">
+                    <div class="row animated bounceInUp animation-slow-08">
+                        <img class="qrCode" id="qrCode" src="~/Content/site/images/ali/qrCode.png" title="@Language["DownloadApp"].Value" />
+                        <div class="height_100" id="tabs">
+                            @*<div class="Ali_login_top"style="display:none">
+                                    <ul class="Ali_login_ul">
+                                        <li class="">
+                                            <div class="Ali_active login_top_left" id="ali_user">
+                                                <img class="usericon" src=@Url.Content("~/Content/site/images/ali/user_active.png")><span>@Language["UserPasswordLogin"].Value</span>
+                                            </div>
+                                        </li>
+                                        <li class="">
+                                            <div class="login_top_right" id="ali_dingtalk">
+                                                <img class="usericon" src=@Url.Content("~/Content/site/images/ali/ding.png")><span>@Language["DingTalkLogin"].Value</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>*@
+                            <div id="username_login" class="Ali_login_boot">
+                                <div class="row">
+                                    <div class="ali_logobox">
+                                        <img class="" src=@Url.Content("~/Content/img/Tencent_img/Tencent_Standard_Logo.png")>
+                                    </div>
+                                </div>
+                                <div class="cform" id="contact-form">
+                                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, true, new { @class = "checkSubmint" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <div class="form-group ali_form_group">
+                                            <div class="input_box">
+                                                @Html.TextBoxFor(m => m.UserName, new { @class = "user_right myright", placeholder = Language["UserName"].Value })
+                                            </div>
+                                            <div class="input_box">
+                                                @Html.PasswordFor(m => m.Password, new
+                                           {
+                                               @class = "pass_right myright",
+                                               placeholder = Language["Password"].Value
+                                           })
+                                            </div>
+                                            <div class="input_box myleft" style="width:2.3rem">
+                                                <input id="CaptchaValue" name="CaptchaValue" type="text" class="myright" placeholder="@Language["Captcha"].Value" autocomplete="off" />
+                                            </div>
+                                            <img id="imgCaptcha" class="myright" style="cursor: pointer;" src="@Url.Action("GetCaptcha", "Account")" alt="@Language["Captcha"].Value" />
+                                        </div>
+
+                                        <button class="btn btn-lg btn-block mar-bot20 height60 ali_login_button" type="submit">@Language["LogIn"].Value</button>
+                                        <div class="checkbox">
+
+                                            <label class="myleft codetext">
+                                                @Html.CheckBoxFor(m => m.RememberMe, new { @class = "" })@Language["Rememberme"].Value
+                                            </label>
+                                            <a class="myright" href="#" id="forgetPasswd">@Language["ForgetPasswd"].Value</a>
+                                        </div>
+                                        <div style="height:.45rem;line-height:.45rem;">
+                                            @Html.ValidationSummary()
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div id="login_container" class="login_container" style="display:none">
+
+                            </div>
+
+                        </div>
+                        <div id="qrCodeContainer" class="height_100 qrCodeContainer" style="display:none">
+                            <h3 class="row col-lg-12 col-md-12 col-sm-12 nopadding nomargin ">@Language["WelcomUseApp"].Value</h3>
+                            <div class="row col-lg-12 col-md-12 col-sm-12  nomargin">
+                                <div class="col-lg-6 col-md-6 col-sm-6 nopadding nomargin qrCodeBotm">
+                                    <div>
+                                        <div class="iosIcon"></div>
+                                        <span>iOS @Language["VersionShort"].Value</span>
+                                    </div>
+                                    <div class="qrCodeImgBox">
+                                        <div id="iosQrcode" class="qrcode" style="position:relative;">
+                                            <img id='qrCodeIco' class="qrCodeIco" src="~/Content/site/images/ali/alibaba.png" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 nopadding nomargin qrCodeBotm">
+                                    <div>
+                                        <div class="androidIcon"></div>
+                                        <span>Android @Language["VersionShort"].Value</span>
+                                    </div>
+                                    <div class="qrCodeImgBox">
+                                        <div id="qrcode" class="qrcode" style="position:relative;">
+                                            <img id='qrCodeIco' class="qrCodeIco" src="~/Content/site/images/ali/alibaba.png" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        else
+        {
+            <link href="~/Content/BimgoforSaaS/bimgoSaas_Login.css" rel="stylesheet" />
+            <section id="section-qa" class="section appear clearfix">
+                <div class="container">
+                    <div class="row animated bounceInUp animation-slow-08">
+                        <div id="username_login" class="Ali_login_boot" style="height:5.6rem;">
+                            <div class="row">
+                                <div class="ali_logobox">
+                                    <img class="" src=@Url.Content("~/Content/img/bimgoSaas/login_logo.png")>
+                                    <div class="login_text">工程项目BIM综合云服务平台</div>
+                                </div>
+                            </div>
+                            <div class="cform" id="contact-form">
+                                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, true, new { @class = "checkSubmint" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="form-group ali_form_group">
+                                        <div class="input_box">
+                                            @Html.TextBoxFor(m => m.UserName, new { @class = "user_right myright", placeholder = Language["UserName"].Value })
+                                        </div>
+                                        <div class="input_box">
+                                            @Html.PasswordFor(m => m.Password, new
+                                       {
+                                           @class = "pass_right myright",
+                                           placeholder = Language["Password"].Value
+                                       })
+                                        </div>
+                                        <div class="input_box myleft" style="width:2.3rem">
+                                            <input id="CaptchaValue" name="CaptchaValue" type="text" class="myright" placeholder="@Language["Captcha"].Value" autocomplete="off" />
+                                        </div>
+                                        <img id="imgCaptcha" class="myright" style="cursor: pointer;" src="@Url.Action("GetCaptcha", "Account")" alt="@Language["Captcha"].Value" />
+                                    </div>
+
+                                    <button class="btn btn-lg btn-block mar-bot20 height60 ali_login_button" type="submit">@Language["LogIn"].Value</button>
+                                    <div class="checkbox">
+
+                                        <label class="myleft codetext">
+                                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "" })@Language["Rememberme"].Value
+                                        </label>
+                                        <a class="myright" href="#" id="forgetPasswd">@Language["ForgetPasswd"].Value</a>
+                                    </div>
+                                    <div style="height:.45rem;line-height:.45rem;">
+                                        @Html.ValidationSummary()
+                                    </div>
+                                    <div class="sigma-content">
+                                        <div class="sigma-middle-line">
+                                            <div class="sigma-line-text login_top_right" id="ali_dingtalk">
+                                                <img class="usericon" src=@Url.Content("~/Content/site/images/ali/ding_active.png")><span>@Language["DingTalkLogin"].Value</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div id="ding_box" class="ding_box" style="display:none">
+                            <div class="return_btn" id="ali_user"><i class="fa fa-arrow-left" aria-hidden="true"></i>@Language["Back"].Value</div>
+                            <div class="ding_title">
+                                <img class="usericon" src=@Url.Content("~/Content/site/images/ali/ding_active.png")><span>@Language["DingTalkLogin"].Value</span>
+                            </div>
+                            <div id="login_container" class="login_container"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footertxt">@@2017-@DateTime.Now.Year 立方数科股份有限公司</div>
+            </section>
+        }
+    }
+    <script src="~/lib/qrcodejs/qrcode.min.js"></script>
+    <script src="~/bundles/jquery.js"></script>
+    <script src="https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
+    <script>
+        var deviceWidth;
+        setHtmlFontSize();
+        var isALijs = '@isALi'=='True';
+        var IsTencentJs = '@IsTencent'=='True';
+        if (window.addEventListener) {
+          window.addEventListener('resize', function () {
+              setHtmlFontSize()
+          }, false)
+        }
+        function setHtmlFontSize () {
+          // 1920是设计稿的宽度，当大于1920时采用1920宽度，比例也是除以19.20
+            deviceWidth = document.documentElement.clientWidth > 1920 ? 1920 : document.documentElement.clientWidth
+            document.getElementsByTagName('html')[0].style.cssText = 'font-size:' + deviceWidth / 19.20 + 'px !important'
+        }
+        $(function () {
+            $("#forgetPasswd").click(function () {
+                if ($("#UserName").val() == '') {
+                    alert('@Language["AccountRequire"].Value');
+                    return;
+                }
+                resetPasswd($("#UserName").val());
+            });
+            Dinglogin()
+             //login 判断
+            if (isALijs) {
+                makeCode('qrcode', '@Configuration["AppSettings:ApkQrCodeUrl"]');
+                makeCode('iosQrcode', '@Configuration["AppSettings:IosQrCodeUrl"]');
+                $("#user").click(function () {
+                    $("#username_login").show();
+                    $("#login_container").hide();
+
+                    $(this).siblings().removeClass("active");
+                    $(this).addClass("active");
+                });
+                $("#dingtalk").click(function () {
+                    $("#login_container").show();
+                    $("#username_login").hide();
+                    $(this).siblings().removeClass("active");
+                    $(this).addClass("active");
+                });
+                BimgoAli()
+            } else if (IsTencentJs) {
+                makeCode('qrcode', '@Configuration["AppSettings:ApkQrCodeUrl"]');
+                makeCode('iosQrcode', '@Configuration["AppSettings:IosQrCodeUrl"]');
+                BimgoAli()
+            }else {
+                $("#user").click(function () {
+                    $("#username_login").show();
+                    $("#ding_box").hide();
+                    $(this).siblings().removeClass("active");
+                    $(this).addClass("active");
+                });
+                $("#dingtalk").click(function () {
+                    $("#ding_box").show();
+                    $("#username_login").hide();
+                    $(this).siblings().removeClass("active");
+                    $(this).addClass("active");
+                });
+                BimgoSaas()
+            }
+        });
+        //二维码生成
+        function makeCode(qrcodeId, url) {
+            var qrDiv = document.getElementById(qrcodeId);
+            //创建图片，插入id为qrcode的div元素中
+            var img = $(".qrCodeIco");
+            var qrcode = new QRCode(qrDiv, {
+                text: url, //网址
+                width: 192, //宽
+                height: 192, //高qrcode
+                colorDark: "#000000", //前景色
+                colorLight: "#ffffff", //背景色
+                correctLevel: QRCode.CorrectLevel.H //纠错等级
+            });;
+            //控制logo图标的位置
+            var margin = ($(`#${qrcodeId}`).height() - $(".qrCodeIco").height()) / 2;
+            $(".qrCodeIco").css("margin", margin);
+        }
+         function Dinglogin() {
+
+                var url = '@ViewBag.DingTalkUrl' ;
+                var goto = 'https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=@ViewBag.AppID&response_type=code&scope=snsapi_login&state=STATE&redirect_uri='+url
+                     var obj = DDLogin({
+                     id:"login_container",//这里需要你在自己的页面定义一个HTML标签并设置id，例如<div id="login_container"></div>或<span id="login_container"></span>
+                             goto: encodeURIComponent(goto), //请参考注释里的方式
+                             style: "border:none;background-color:#FFFFFF;",
+                             width : "365",
+                             height: "400"
+                     });
+                var handleMessage = function (event) {
+                    var origin = event.origin;
+                    console.log("origin", event.origin);
+                    if( origin == "https://login.dingtalk.com" ) { //判断是否来自ddLogin扫码事件。
+                        var loginTmpCode = event.data; //拿到loginTmpCode后就可以在这里构造跳转链接进行跳转了
+                        console.log("loginTmpCode", loginTmpCode);
+                        window.location.href = goto + "&loginTmpCode=" + loginTmpCode;
+                    }
+                };
+                if (typeof window.addEventListener != 'undefined') {
+                    window.addEventListener('message', handleMessage, false);
+                } else if (typeof window.attachEvent != 'undefined') {
+                    window.attachEvent('onmessage', handleMessage);
+                }
+
+        }
+         function resetPasswd(account) {
+                    var that = this;
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    var headers = {};
+                    headers['__RequestVerificationToken'] = token;
+                    var url = '@Url.Action("AskResetPassword")';
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        datatype: 'json',
+                        traditional: true,
+                        headers: headers,
+                        data: {
+                            account: account
+                        },
+                        success: function (result) {
+                            if (result.IsSuccess)
+                                alert('@Language["SentResertPassword"].Value');
+                            else
+                                alert(result.Error);
+                        },
+                        error: function (result) {
+                                alert("Error");
+                        }
+                    });
+        }
+        function BimgoAli() {
+                $("#qrCode").on({
+                    mouseover: function () {
+                        $("#qrCodeContainer").show();
+                        $("#tabs").hide();
+                    },
+                    mouseout: function () {
+                        $("#qrCodeContainer").hide();
+                        $("#tabs").show();
+                    }
+                });
+                $("#ali_user").click(function(){
+                    $("#username_login").show();
+                    $("#login_container").hide();
+                    $(this).children("img").attr("src", "@Url.Content("~/Content/site/images/ali/user_active.png")");
+                    $(this).parent().siblings().children().children("img").attr("src", "@Url.Content("~/Content/site/images/ali/ding.png")");
+                    $(this).parent().siblings().children("div").removeClass("Ali_active");
+                    $(this).addClass("Ali_active");
+                });
+                $("#ali_dingtalk").click(function(){
+                        $("#login_container").show();
+                        $("#username_login").hide();
+                        $(this).children("img").attr("src", "@Url.Content("~/Content/site/images/ali/ding_active.png")");
+                        $(this).parent().siblings().children().children("img").attr("src", "@Url.Content("~/Content/site/images/ali/user.png")");
+                        $(this).parent().siblings().children("div").removeClass("Ali_active");
+                        $(this).addClass("Ali_active");
+                });
+                $(".ali_form_group .input_box input").focus(function () {
+                    $(this).parent().css("border", "1px solid #44b3fe");
+                });
+                $(".ali_form_group .input_box input").blur(function () {
+                    $(this).parent().css("border", "1px solid #d7d8d9");
+                    $(this).parent().css("background", "#fff");
+
+                });
+        }
+        function BimgoSaas() {
+
+                $("#ali_user").click(function(){
+                    $("#username_login").show();
+                    $("#ding_box").hide();
+                    $(this).children("img").attr("src", "@Url.Content("~/Content/site/images/ali/user_active.png")");
+                    $(this).parent().siblings().children().children("img").attr("src", "@Url.Content("~/Content/site/images/ali/ding.png")");
+                });
+
+                $("#ali_dingtalk").click(function(){
+                    $("#ding_box").show();
+                    $("#username_login").hide();
+                    $(this).children("img").attr("src", "@Url.Content("~/Content/site/images/ali/ding_active.png")");
+                    $(this).parent().siblings().children().children("img").attr("src", "@Url.Content("~/Content/site/images/ali/user.png")");
+                });
+                $(".ali_form_group .input_box input").focus(function () {
+                    $(this).parent().css("border", "1px solid #44b3fe");
+                });
+                $(".ali_form_group .input_box input").blur(function () {
+                    $(this).parent().css("border", "1px solid #d7d8d9");
+                    $(this).parent().css("background", "#fff");
+
+                });
+            }
+        function saveFile(data, filename) {
+            var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+            save_link.href = data;
+            save_link.download = filename;
+            var event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            save_link.dispatchEvent(event);
+        };
+    </script>
+
+
+
+</body>
+</html>
