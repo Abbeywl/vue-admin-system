@@ -59,7 +59,7 @@ export default {
                     Login(this.param).then((res) => {
                         console.log(res);
                         this.$message.success('登录成功');
-                        localStorage.setItem('ms_UserName', this.param.UserName);
+                        localStorage.setItem('ms_username', this.param.UserName);
                         this.$router.push('/');
                     });
                 } else {
