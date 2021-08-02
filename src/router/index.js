@@ -33,7 +33,11 @@ export default new Router({
                     path: '/KFormDesign',
                     component: () => import('../pages/KFormDesign/index.vue'),
                     meta: { title: '表单案例' }
-                    
+                },
+                   {
+                    path: '/KFormBuild',
+                    component: () => import('../pages/KFormDesign/kFormBuild.vue'),
+                    meta: { title: '表单绘制' }
                 }
             ]
         },

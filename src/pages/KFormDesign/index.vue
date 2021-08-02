@@ -6,11 +6,7 @@
 
 <script>
 import '@/components/k-form-design/styles/form-design.less';
-import KFormDesign from '@/components/k-form-design/packages';
 export default {
-    install(Vue) {
-        Vue.component('KFormDesign', KFormDesign);
-    },
     components: {},
     data() {
         return {};

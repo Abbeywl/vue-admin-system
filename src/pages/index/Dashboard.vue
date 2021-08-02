@@ -113,7 +113,7 @@ export default {
     name: 'dashboard',
     data() {
         return {
-            name: localStorage.getItem('ms_username'),
+            name: localStorage.getItem('user_token'),
             todoList: [
                 {
                     title: '今天要修复100个bug',
@@ -224,7 +224,7 @@ export default {
         }
     },
     mounted() {
-        this.getData();
+        //   this.getData();
     },
 
     // created() {

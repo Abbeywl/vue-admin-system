@@ -58,12 +58,16 @@ export default {
                 },
                 {
                     icon: 'el-icon-rank',
-                    index: '0',
+                    index: '1',
                     title: '自定义表单',
                     subs: [
                         {
-                            index: 'KFormDesign',
+                            index: '/KFormDesign',
                             title: '表单案例'
+                        },
+                        {
+                            index: '/KFormBuild',
+                            title: '绘制表单'
                         }
                     ]
                 }

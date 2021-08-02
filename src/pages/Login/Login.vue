@@ -51,7 +51,7 @@ export default {
             Login(this.param).then((res) => {
                 console.log(res);
             });
-            // Login().then(res)
+            //  Login().then(res);
         },
         submitForm() {
             this.$refs.login.validate((valid) => {
@@ -59,7 +59,7 @@ export default {
                     Login(this.param).then((res) => {
                         console.log(res);
                         this.$message.success('登录成功');
-                        localStorage.setItem('ms_username', this.param.UserName);
+                        localStorage.setItem('user_token', this.param.UserName);
                         this.$router.push('/');
                     });
                 } else {
