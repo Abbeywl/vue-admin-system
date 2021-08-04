@@ -1,24 +1,36 @@
 <template>
     <div class="login-wrap">
-        <div class="ms-login">
-            <div class="ms-title">后台管理系统</div>
-            <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
-                <el-form-item prop="UserName">
-                    <el-input v-model="param.UserName" placeholder="UserName">
-                        <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
-                    </el-input>
-                </el-form-item>
-                <el-form-item prop="Password">
-                    <el-input type="Password" placeholder="Password" v-model="param.Password" @keyup.enter.native="submitForm()">
-                        <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
-                    </el-input>
-                </el-form-item>
-                <div class="login-btn">
-                    <el-button type="primary" @click="submitForm()">登录</el-button>
-                </div>
-                <p class="login-tips">Tips : 用户名和密码随便填。</p>
-            </el-form>
-        </div>
+        <a-row align="middle" type="flex" justify="space-around" class="login_box">
+            <a-col :span="24">
+                <a-form-model
+                    layout="horizontal"
+                    ref="ruleForm"
+                    :rules="rules"
+                    :model="param"
+                    @submit="submitForm"
+                    @submit.native.prevent
+                    :label-col="labelCol"
+                    :wrapper-col="wrapperCol"
+                >
+                    <div class="ms-title">后台管理系统</div>
+                    <a-form-model-item label="用户名" prop="UserName" ref="UserName">
+                        <a-input v-model="param.UserName" placeholder="用户名">
+                            <a-icon slot="prefix" type="user" style="color: rgba(0, 0, 0, 0.25)" />
+                        </a-input>
+                    </a-form-model-item>
+                    <a-form-model-item label="密码" prop="Password" ref="Password">
+                        <a-input v-model="param.Password" type="password" placeholder="密码">
+                            <a-icon slot="prefix" type="lock" style="color: rgba(0, 0, 0, 0.25)" />
+                        </a-input>
+                    </a-form-model-item>
+                    <a-form-model-item v-bind="formItemLayoutWithOutLabel">
+                        <a-button type="primary" html-type="submit" block :disabled="param.UserName === '' || param.Password === ''">
+                            登录
+                        </a-button>
+                    </a-form-model-item>
+                </a-form-model>
+            </a-col>
+        </a-row>
     </div>
 </template>
 
@@ -27,6 +39,14 @@ import { testApi, Login } from '../../api/index';
 export default {
     data: function () {
         return {
+            labelCol: { span: 4 },
+            wrapperCol: { span: 20 },
+            formItemLayoutWithOutLabel: {
+                wrapperCol: {
+                    xs: { span: 24, offset: 0 },
+                    sm: { span: 20, offset: 4 }
+                }
+            },
             param: {
                 UserName: '18393911684',
                 Password: 'airport123',
@@ -51,10 +71,9 @@ export default {
             Login(this.param).then((res) => {
                 console.log(res);
             });
-            //  Login().then(res);
         },
         submitForm() {
-            this.$refs.login.validate((valid) => {
+            this.$refs.ruleForm.validate((valid) => {
                 if (valid) {
                     Login(this.param).then((res) => {
                         console.log(res);
@@ -80,14 +99,26 @@ export default {
     height: 100%;
     background-image: url(../../assets/img/login-bg.jpg);
     background-size: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login_box {
+    width: 30%;
+    /* height: 50vh; */
+    padding: 20px;
+    box-shadow: beige;
+    box-shadow: 2px 2px 2px 2px #fff;
+    background: #fff;
 }
 .ms-title {
     width: 100%;
     line-height: 50px;
     text-align: center;
     font-size: 20px;
-    color: #fff;
+    color: #333;
     border-bottom: 1px solid #ddd;
+    margin-bottom: 25px;
 }
 .ms-login {
     position: absolute;

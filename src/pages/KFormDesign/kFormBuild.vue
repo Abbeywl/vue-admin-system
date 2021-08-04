@@ -1,7 +1,6 @@
 <template>
     <div class="gutter-example">
         <k-form-build @submit="submitData" :value="jsonData" />
-        <el-row> </el-row>
         <a-row :gutter="16">
             <a-col class="gutter-row" :span="6">
                 <div class="gutter-box"><a-button type="primary" @click="handlePreview"> 预览 </a-button></div>

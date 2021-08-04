@@ -1,110 +1,73 @@
 <template>
-    <div class="sidebar">
-        <el-menu
-            class="sidebar-el-menu"
-            :default-active="onRoutes"
-            :collapse="collapse"
-            background-color="#324157"
-            text-color="#bfcbd9"
-            active-text-color="#20a0ff"
-            unique-opened
-            router
+    <a-layout-sider width="200" style="background: #fff" v-model="collapsed" theme="light" collapsed-width="0">
+        <a-menu
+            theme="light"
+            mode="inline"
+            :open-keys="openNavList"
+            @openChange="onOpenNav"
+            :inline-collapsed="collapsed"
+            :default-selected-keys="['1']"
+            :default-open-keys="['1']"
         >
-            <template v-for="item in items">
-                <template v-if="item.subs">
-                    <el-submenu :index="item.index" :key="item.index">
-                        <template slot="title">
-                            <i :class="item.icon"></i>
-                            <span slot="title">{{ item.title }}</span>
-                        </template>
-                        <template v-for="subItem in item.subs">
-                            <el-submenu v-if="subItem.subs" :index="subItem.index" :key="subItem.index">
-                                <template slot="title">{{ subItem.title }}</template>
-                                <el-menu-item v-for="(threeItem, i) in subItem.subs" :key="i" :index="threeItem.index">{{
-                                    threeItem.title
-                                }}</el-menu-item>
-                            </el-submenu>
-                            <el-menu-item v-else :index="subItem.index" :key="subItem.index">{{ subItem.title }}</el-menu-item>
-                        </template>
-                    </el-submenu>
-                </template>
-                <template v-else>
-                    <el-menu-item :index="item.index" :key="item.index">
-                        <i :class="item.icon"></i>
-                        <span slot="title">{{ item.title }}</span>
-                    </el-menu-item>
-                </template>
+            <template v-for="item in leftMenuData">
+                <a-menu-item v-if="!item.children" :key="item.key">
+                    <router-link :to="item.path">{{ item.name }}</router-link>
+                </a-menu-item>
+                <sub-menu v-else :key="item.key" :menu-info="item" />
             </template>
-        </el-menu>
-    </div>
+        </a-menu>
+    </a-layout-sider>
 </template>
 
 <script>
 import bus from '../common/bus';
+import SubMenu from './subMenu.vue';
 export default {
+    components: { SubMenu },
     data() {
         return {
-            collapse: false,
-            items: [
+            collapsed: false,
+            openNavList: [],
+            leftMenuData: [
                 {
-                    icon: 'el-icon-lx-home',
-                    index: 'dashboard',
-                    title: '系统首页'
+                    name: '系统首页',
+                    key: '1',
+                    path: '/dashboard',
+                    icon: 'deployment-unit'
                 },
                 {
-                    icon: 'el-icon-lx-home',
-                    index: 'Internal',
-                    title: 'BIM协同'
-                },
-                {
-                    icon: 'el-icon-rank',
-                    index: '1',
-                    title: '自定义表单',
-                    subs: [
+                    name: '自定义表单',
+                    path: '2',
+                    key: '2',
+                    icon: 'setting',
+                    children: [
+                        { name: '表单案例', path: '/KFormDesign', icon: 'setting', key: '2.1' },
                         {
-                            index: '/KFormDesign',
-                            title: '表单案例'
-                        },
-                        {
-                            index: '/KFormBuild',
-                            title: '绘制表单'
+                            name: '绘制表单',
+                            path: '/KFormBuild',
+                            icon: 'setting',
+                            key: '2.2'
                         }
                     ]
                 }
             ]
         };
     },
-    computed: {
-        onRoutes() {
-            return this.$route.path.replace('/', '');
-        }
-    },
     created() {
-        // 通过 Event Bus 进行组件间通信，来折叠侧边栏
-        bus.$on('collapse', (msg) => {
-            this.collapse = msg;
-            bus.$emit('collapse-content', msg);
+        bus.$on('collapsed', (msg) => {
+            this.collapsed = msg;
         });
+    },
+    computed: {},
+    methods: {
+        onOpenNav(e) {
+            // console.log(e);
+            let endKey = e.pop();
+            this.openNavList = endKey ? [endKey] : [];
+        }
     }
 };
 </script>
 
 <style scoped>
-.sidebar {
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 70px;
-    bottom: 0;
-    overflow-y: scroll;
-}
-.sidebar::-webkit-scrollbar {
-    width: 0;
-}
-.sidebar-el-menu:not(.el-menu--collapse) {
-    width: 250px;
-}
-.sidebar > ul {
-    height: 100%;
-}
 </style>
