@@ -41,9 +41,9 @@ export default {
                     key: '2',
                     icon: 'setting',
                     children: [
-                        { name: '表单案例', path: '/KFormDesign', icon: 'setting', key: '2.1' },
+                        { name: '绘制表单', path: '/KFormDesign', icon: 'setting', key: '2.1' },
                         {
-                            name: '绘制表单',
+                            name: '表单案例',
                             path: '/KFormBuild',
                             icon: 'setting',
                             key: '2.2'
