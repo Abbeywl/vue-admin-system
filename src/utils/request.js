@@ -1,15 +1,15 @@
 import axios from 'axios';
 
-const service = axios.create({
+const request = axios.create({
     // process.env.NODE_ENV === 'development',// 来判断是否开发环境
     // easy-mock服务挂了，暂时不使用了
-    // baseURL: 'https://www.easy-mock.com/mock/592501a391470c0ac1fab128',
+    baseURL: 'http://47.103.110.240:8218/',
     headers: {'content-type': 'application/json'},
-    baseURL: 'http://47.103.110.240:6299',
-    timeout: 5000
+    // baseURL: 'api​', // api 的 base_url,
+    timeout: 5000,
 });
 
-service.interceptors.request.use(
+request.interceptors.request.use(
     config => {
         return config;
     },
@@ -19,7 +19,7 @@ service.interceptors.request.use(
     }
 );
 
-service.interceptors.response.use(
+request.interceptors.response.use(
     response => {
         if (response.status === 200) {
             return response.data;
@@ -33,4 +33,4 @@ service.interceptors.response.use(
     }
 );
 
-export default service;
+export default request;

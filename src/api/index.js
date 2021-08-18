@@ -1,4 +1,3 @@
-// import request from '../utils/request';
 import request from '../utils/request'
 export const Login = query => {
     return request({
@@ -7,11 +6,11 @@ export const Login = query => {
         data:query
     });
 };
-export const testApi = query => {
+export const SaveFormTableInfo = query => {
     return request({
-        url: '/Api/AppUser/GetUserSubmitStatistics',
-        method: 'get',
-        params: query
+        url: '​/api​/userdefinedform​/SaveFormTableInfo',
+        method: 'post',
+        data: query
     });
 };
 export const fetchData = query => {

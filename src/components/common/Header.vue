@@ -2,8 +2,10 @@
     <!-- <div class="header"> -->
     <!-- 折叠按钮 -->
     <a-layout-header class="header">
-        <!-- <div class="logo" /> -->
-        <a-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'" class="triggerIcon headTool" @click="collapseChage" />
+        <div class="headerleft">
+            <img src="../../assets/img/login-bg.jpg" class="logo" style="width: 200px" />
+            <a-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'" class="triggerIcon headTool" @click="collapseChage" />
+        </div>
         <div class="">
             <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" size="large" />
             <a-dropdown>
@@ -91,11 +93,23 @@ export default {
     align-items: center;
     position: relative;
     box-sizing: border-box;
+    padding-left: 15px;
     width: 100%;
     height: 70px;
     color: #fff;
-    .headTool {
-        font-size: 25px;
+
+    .headerleft {
+        display: flex;
+        align-items: center;
+        .logo {
+            width: 150px;
+            object-fit: cover;
+            height: 50px;
+        }
+        .headTool {
+            margin-left: 15px;
+            font-size: 25px;
+        }
     }
 }
 </style>

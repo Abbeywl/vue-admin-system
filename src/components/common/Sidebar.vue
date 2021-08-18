@@ -7,7 +7,7 @@
             @openChange="onOpenNav"
             :inline-collapsed="collapsed"
             :default-selected-keys="['1']"
-            :default-open-keys="['1']"
+            :default-open-keys="['2.1']"
         >
             <template v-for="item in leftMenuData">
                 <a-menu-item v-if="!item.children" :key="item.key">

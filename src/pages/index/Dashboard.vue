@@ -12,7 +12,7 @@
         </a-row>
         <a-row>
             <a-table :columns="columns" :data-source="data" :scroll="{ x: 1000, y: 600 }">
-                <template slot-scope="record, text" slot="tag">
+                <template slot-scope="record" slot="tag">
                     <span class="tag">
                         <a-tag v-if="record == '文字0'" class="invalid">作废</a-tag>
                         <a-tag v-else>正常</a-tag>
@@ -30,7 +30,7 @@
             </a-table>
         </a-row>
         <a-modal title="新建巡检点" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="handleCancel">
-            <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-form-model ref="ruleForm" :model="form" :rules="rules">
                 <a-form-model-item ref="precinct" label="管理区" prop="precinct" labelAlign="left" v-bind="layout">
                     <a-input
                         v-model="form.precinct"
@@ -77,6 +77,8 @@
 </template>
 
 <script>
+import { SaveFormTableInfo } from '@/api/index';
+
 const data = [];
 const columns = [
     { title: '管理區', width: 100, dataIndex: 'name', key: 'name', fixed: 'left' },
@@ -109,6 +111,7 @@ for (let i = 0; i < 100; i++) {
         address: `文字${i}`
     });
 }
+
 export default {
     components: {},
     data() {
@@ -147,6 +150,17 @@ export default {
     computed: {},
     watch: {},
     methods: {
+        getDataTest() {
+            var data = {
+                id: 0,
+                htmlJson: '',
+                menuName: '测试表单添加',
+                tableName: 'testFormAdd'
+            };
+            SaveFormTableInfo(data).then((res) => {
+                console.log(res);
+            });
+        },
         onSearch() {},
 
         handleAdd() {
@@ -180,7 +194,9 @@ export default {
             this.visible = false;
         }
     },
-    created() {},
+    created() {
+        this.getDataTest();
+    },
     mounted() {},
     beforeCreate() {},
     beforeMount() {},

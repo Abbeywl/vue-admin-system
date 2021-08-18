@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { testApi, Login } from '../../api/index';
+// import { Login } from '../../api/index';
 export default {
     data: function () {
         return {
@@ -59,14 +59,10 @@ export default {
         };
     },
     mounted() {
-        this.getDtata();
+        //  this.getDtata();
     },
     methods: {
-        getDtata() {
-            testApi(this.query).then((res) => {
-                console.log(res);
-            });
-        },
+        getDtata() {},
         LonginFun() {
             Login(this.param).then((res) => {
                 console.log(res);
@@ -75,12 +71,12 @@ export default {
         submitForm() {
             this.$refs.ruleForm.validate((valid) => {
                 if (valid) {
-                    Login(this.param).then((res) => {
-                        console.log(res);
-                        this.$message.success('登录成功');
-                        localStorage.setItem('user_token', this.param.UserName);
-                        this.$router.push('/');
-                    });
+                    //Login(this.param).then((res) => {
+                    //console.log(res);
+                    this.$message.success('登录成功');
+                    localStorage.setItem('user_token', this.param.UserName);
+                    this.$router.push('/');
+                    //});
                 } else {
                     this.$message.error('请输入账号和密码');
                     console.log('error submit!!');
