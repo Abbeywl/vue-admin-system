@@ -8,7 +8,7 @@ export const Login = query => {
 };
 export const SaveFormTableInfo = query => {
     return request({
-        url: '​/api​/userdefinedform​/SaveFormTableInfo',
+        url: 'api/userdefinedform/SaveFormTableInfo',
         method: 'post',
         data: query
     });

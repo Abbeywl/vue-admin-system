@@ -153,9 +153,10 @@ export default {
         getDataTest() {
             var data = {
                 id: 0,
-                htmlJson: '',
+                htmlJson: 'ssss',
                 menuName: '测试表单添加',
-                tableName: 'testFormAdd'
+                tableName: 'testFormAdd',
+                form: true
             };
             SaveFormTableInfo(data).then((res) => {
                 console.log(res);

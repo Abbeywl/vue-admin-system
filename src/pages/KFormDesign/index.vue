@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-        <k-form-design toolbarsTop :showHead="false" style="height: 100%" @save="handleSave" />
+        <k-form-design toolbarsTop :showHead="true" style="height: 100%" @save="handleSave" ref="title" />
     </div>
 </template>
 
@@ -12,11 +12,13 @@ export default {
     components: {},
     data() {
         return {
+            titleVal: '',
             saveData: {
                 id: 0,
                 htmlJson: '',
-                menuName: '测试表单添加',
-                tableName: 'testFormAdd'
+                menuName: '',
+                tableName: 'testFormAdd',
+                form: true
             }
         };
     },
@@ -24,11 +26,17 @@ export default {
     watch: {},
     methods: {
         handleSave(values) {
-            alert('触发保存方法');
+            if (this.titleVal == '') {
+                alert(1);
+            } else {
+                this.saveData.htmlJson = values;
+                this.saveData.menuName = this.titleVal;
+                console.log(this.saveData);
+                SaveFormTableInfo(this.saveData).then((res) => {
+                    console.log(res);
+                });
+            }
             console.log(values);
-            SaveFormTableInfo(this.saveData).then((res) => {
-                console.log(res);
-            });
         },
         async getdata() {
             const countData = await SaveFormTableInfo(this.saveData);
@@ -40,7 +48,12 @@ export default {
         }
     },
     created() {},
-    mounted() {},
+    mounted() {
+        this.$refs['title'].$on('getTitleVal', (msg) => {
+            this.titleVal = msg;
+            console.log('msg===', msg);
+        });
+    },
     beforeCreate() {},
     beforeMount() {},
     beforeUpdate() {},

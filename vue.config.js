@@ -1,4 +1,21 @@
 module.exports = {
+  devServer: {
+    port: 8080,
+    host: 'localhost',
+    https: false,
+    open: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+    },
+    proxy: { 
+      '/api': {
+        target: 'http://47.103.110.240:8218/api',
+        secure: false,
+        changOrigin: true, 
+      },
+    }
+  },
   css: {
     loaderOptions: {
       less: {

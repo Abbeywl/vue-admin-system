@@ -1,7 +1,7 @@
 <template>
     <a-config-provider :locale="locale">
         <div class="form-designer-container-9136076486841527">
-            <k-header v-if="showHead" :title="title" />
+            <k-header v-if="showHead" ref="header" />
             <!-- 操作区域 start -->
             <operatingArea
                 v-if="toolbarsTop"
@@ -280,6 +280,11 @@ export default {
             immediate: true
         }
     },
+    mounted() {
+        this.$refs['header'].$on('getTitle', (msg) => {
+            this.$emit('getTitleVal', msg);
+        });
+    },
     computed: {
         basicsArray() {
             // 计算需要显示的基础字段
@@ -340,6 +345,7 @@ export default {
             this.$refs.KFCP.handleCopy(false, item);
         },
         handleOpenJsonModal() {
+            alert(this.title);
             // 打开json预览模态框
             this.$refs.jsonModal.jsonData = this.data;
             this.$refs.jsonModal.visible = true;

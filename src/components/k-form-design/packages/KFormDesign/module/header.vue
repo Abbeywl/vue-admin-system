@@ -6,15 +6,34 @@
  * @LastEditTime: 2020-03-26 20:18:56
  -->
 <template>
-  <header class="header" v-text="title"></header>
+    <header class="header"><a-input placeholder="请输入表单名称" v-model="title" @change="titleChange" /></header>
 </template>
 <script>
 export default {
-  props: {
-    title: {
-      type: String,
-      default: "表单设计器 --by kcz"
+    props: {
+        // title: {
+        //     type: String,
+        //     default: '表单设计器 --by kcz'
+        // }
+    },
+    data() {
+        return {
+            title: ''
+        };
+    },
+    methods: {
+        titleChange() {
+            this.$emit('getTitle', this.title);
+        }
     }
-  }
 };
 </script>
+<style scoped>
+.header {
+    margin: 0 auto;
+}
+input {
+    text-align: center;
+    width: 300px;
+}
+</style>
