@@ -7,7 +7,6 @@
             @openChange="onOpenNav"
             :inline-collapsed="collapsed"
             :default-selected-keys="['1']"
-            :default-open-keys="['2.1']"
         >
             <template v-for="item in leftMenuData">
                 <a-menu-item v-if="!item.children" :key="item.key">
@@ -43,8 +42,8 @@ export default {
                     children: [
                         { name: '绘制表单', path: '/KFormDesign', icon: 'setting', key: '2.1' },
                         {
-                            name: '表单案例',
-                            path: '/KFormBuild',
+                            name: '表单列表',
+                            path: '/FormList',
                             icon: 'setting',
                             key: '2.2'
                         }

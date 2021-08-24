@@ -1,0 +1,188 @@
+{
+	"list": [
+		{
+			"type": "select",
+			"label": "管理区",
+			"options": {
+				"width": "100%",
+				"multiple": false,
+				"disabled": false,
+				"clearable": false,
+				"hidden": false,
+				"placeholder": "请选择",
+				"dynamicKey": "",
+				"dynamic": false,
+				"options": [
+					{
+						"value": "1",
+						"label": "管理区1"
+					},
+					{
+						"value": "2",
+						"label": "管理区2"
+					}
+				],
+				"showSearch": false
+			},
+			"model": "regionId",
+			"key": "select_1628583180108",
+			"help": "",
+			"rules": [
+				{
+					"required": true,
+					"message": "必填项"
+				}
+			]
+		},
+		{
+			"type": "input",
+			"label": "巡检点名称",
+			"options": {
+				"type": "text",
+				"width": "100%",
+				"defaultValue": "",
+				"placeholder": "请输入",
+				"clearable": false,
+				"maxLength": null,
+				"addonBefore": "",
+				"addonAfter": "",
+				"hidden": false,
+				"disabled": false
+			},
+			"model": "taskName",
+			"key": "input_1628584107025",
+			"help": "",
+			"rules": [
+				{
+					"required": true,
+					"message": "必填项"
+				}
+			]
+		},
+		{
+			"type": "select",
+			"label": "巡检点编号",
+			"options": {
+				"width": "100%",
+				"multiple": false,
+				"disabled": false,
+				"clearable": false,
+				"hidden": false,
+				"placeholder": "请选择",
+				"dynamicKey": "",
+				"dynamic": false,
+				"options": [
+					{
+						"value": "1",
+						"label": "设备1"
+					},
+					{
+						"value": "2",
+						"label": "设备2"
+					}
+				],
+				"showSearch": false
+			},
+			"model": "equmentId",
+			"key": "select_1628584126777",
+			"help": "",
+			"rules": [
+				{
+					"required": true,
+					"message": "必填项"
+				}
+			]
+		},
+		{
+			"type": "select",
+			"label": "检查要点",
+			"options": {
+				"width": "100%",
+				"multiple": false,
+				"disabled": false,
+				"clearable": false,
+				"hidden": false,
+				"placeholder": "请选择",
+				"dynamicKey": "",
+				"dynamic": false,
+				"options": [
+					{
+						"value": "1",
+						"label": "下拉框1"
+					},
+					{
+						"value": "2",
+						"label": "下拉框2"
+					}
+				],
+				"showSearch": false
+			},
+			"model": "type",
+			"key": "select_1628584152115",
+			"help": "",
+			"rules": [
+				{
+					"required": false,
+					"message": "必填项"
+				}
+			]
+		},
+		{
+			"type": "checkbox",
+			"label": "签到方式",
+			"options": {
+				"disabled": false,
+				"hidden": false,
+				"defaultValue": [],
+				"dynamicKey": "",
+				"dynamic": false,
+				"options": [
+					{
+						"value": "1",
+						"label": "定点自拍"
+					},
+					{
+						"value": "2",
+						"label": "NFC"
+					},
+					{
+						"value": "3",
+						"label": "蓝牙"
+					}
+				]
+			},
+			"model": "checkbox_1629705790717",
+			"key": "checkbox_1629705790717",
+			"help": "",
+			"rules": [
+				{
+					"required": true,
+					"message": "必填项"
+				}
+			]
+		}
+	],
+	"config": {
+		"layout": "horizontal",
+		"labelCol": {
+			"xs": 4,
+			"sm": 4,
+			"md": 4,
+			"lg": 4,
+			"xl": 4,
+			"xxl": 4
+		},
+		"labelWidth": 100,
+		"labelLayout": "flex",
+		"wrapperCol": {
+			"xs": 18,
+			"sm": 18,
+			"md": 18,
+			"lg": 18,
+			"xl": 18,
+			"xxl": 18
+		},
+		"hideRequiredMark": false,
+		"customStyle": ""
+	}
+}

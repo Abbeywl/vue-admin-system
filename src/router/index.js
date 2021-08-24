@@ -21,7 +21,7 @@ export default new Router({
             children: [
                  {
                     path: '/dashboard',
-                    component: () => import('../pages/index/Dashboard.vue'),
+                    component: () => import('../pages/index'),
                     meta: { title: '系统首页' }
                 },
                 {
@@ -35,9 +35,9 @@ export default new Router({
                     meta: { title: '表单案例' }
                 },
                    {
-                    path: '/KFormBuild',
-                    component: () => import('../pages/KFormDesign/kFormBuild.vue'),
-                    meta: { title: '表单绘制' }
+                    path: '/FormList',
+                    component: () => import('../pages/FormList'),
+                    meta: { title: '表单列表' }
                 }
             ]
         },

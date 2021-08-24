@@ -7,7 +7,7 @@
 <script>
 import '@/components/k-form-design/styles/form-design.less';
 import { SaveFormTableInfo } from '@/api/index';
-
+const pinyin = require('js-pinyin');
 export default {
     components: {},
     data() {
@@ -17,8 +17,7 @@ export default {
                 id: 0,
                 htmlJson: '',
                 menuName: '',
-                tableName: 'testFormAdd',
-                form: true
+                tableName: ''
             }
         };
     },
@@ -26,17 +25,24 @@ export default {
     watch: {},
     methods: {
         handleSave(values) {
+            let jsonhtml = JSON.parse(values);
             if (this.titleVal == '') {
-                alert(1);
+                this.$message.warning('请填写表单名称');
+            } else if (jsonhtml.list.length == 0) {
+                this.$message.warning('请选择控件');
             } else {
                 this.saveData.htmlJson = values;
                 this.saveData.menuName = this.titleVal;
-                console.log(this.saveData);
-                SaveFormTableInfo(this.saveData).then((res) => {
-                    console.log(res);
-                });
+                this.saveData.tableName = pinyin.getFullChars(this.titleVal);
+                SaveFormTableInfo(this.saveData)
+                    .then((res) => {
+                        this.$message.success('保存成功');
+                    })
+                    .catch((err) => {
+                        this.$message.success('保存失败');
+                        console.log(err);
+                    });
             }
-            console.log(values);
         },
         async getdata() {
             const countData = await SaveFormTableInfo(this.saveData);
