@@ -1,0 +1,83 @@
+{
+  "_from": "workflow-ui",
+  "_id": "workflow-ui@1.2.3",
+  "_inBundle": false,
+  "_integrity": "sha512-CB4diMGTPWB2MPe9TzV3xznD53nZNwsrkTxyvOwD/mwexpx6rpvukFtq+fuMI+xzoDMihtD44Y+2vXlM6D9SOg==",
+  "_location": "/workflow-ui",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "workflow-ui",
+    "name": "workflow-ui",
+    "escapedName": "workflow-ui",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/workflow-ui/-/workflow-ui-1.2.3.tgz",
+  "_shasum": "e8a3edd8a0fb9b7cc4b5ea4358a372de6e8967f9",
+  "_spec": "workflow-ui",
+  "_where": "D:\\bicheng-work\\MyVueMaster\\vue-admin-system",
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ],
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "基于vue前端工作流UI",
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.4.5",
+    "@vue/cli-plugin-eslint": "^4.4.5",
+    "@vue/cli-service": "^4.4.5",
+    "babel-eslint": "^10.1.0",
+    "core-js": "^3.6.5",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "files": [
+    "src/",
+    "lib/"
+  ],
+  "keywords": [
+    "vue",
+    "workflow ui framework",
+    "component framework",
+    "ui library",
+    "component library",
+    "material components",
+    "vue framework"
+  ],
+  "license": "MIT",
+  "main": "lib/workflow-ui.common.js",
+  "name": "workflow-ui",
+  "repository": {
+    "type": "git",
+    "url": "git+https://https://github.com/go-workflow/workflow-ui"
+  },
+  "scripts": {
+    "build": "vue-cli-service build --target lib --dest lib ./src/index.js",
+    "lint": "vue-cli-service lint",
+    "serve": "vue-cli-service serve"
+  },
+  "sideEffects": [
+    "*.sass",
+    "*.scss",
+    "*.css"
+  ],
+  "version": "1.2.3"
+}

@@ -18,6 +18,11 @@ import KFormDesign from './components/k-form-design/packages'
  Vue.use(KFormDesign);
  Vue.use(Antdvue);
 
+// workflow-ui 前端工作流 UI 源码 https://github.com/go-workflow/workflow-ui
+import Node from './components/workflow-ui/src/components/Generator/node'
+Vue.component('Node', Node)
+
+
 Vue.use(VueI18n);
 // Vue.use(ElementUI, {
 //     size: 'small'

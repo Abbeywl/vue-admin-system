@@ -48,6 +48,12 @@ export default {
                             key: '2.2'
                         }
                     ]
+                },
+                {
+                    name: '工作流',
+                    path: '/workflow',
+                    key: '3',
+                    icon: 'setting'
                 }
             ]
         };

@@ -40,3 +40,28 @@ export const SaveTableData = query => {
         data: query
     });
 };
+
+//查看表单记录
+export const GetTableDataList = query => {
+    return request({
+        url: 'api/userdefinedform/GetTableDataList',
+        method: 'post',
+        data: query
+    });
+};
+
+//记录修改
+export const UpdateTableDataInfo = query => {
+    return request({
+        url: 'api/userdefinedform/UpdateTableDataInfo',
+        method: 'post',
+        data: query
+    });
+};
+//删除修改
+export const DeleteTableDataInfo = (id) => {
+    return request({
+        url: 'api/userdefinedform/DeleteTableDataInfo?tableID='+id,
+        method: 'delete',
+    });
+};

@@ -345,7 +345,6 @@ export default {
             this.$refs.KFCP.handleCopy(false, item);
         },
         handleOpenJsonModal() {
-            alert(this.title);
             // 打开json预览模态框
             this.$refs.jsonModal.jsonData = this.data;
             this.$refs.jsonModal.visible = true;

@@ -104,7 +104,7 @@ export default {
 .tags {
     position: relative;
     height: 45px;
-    overflow: hidden;
+    /* overflow: hidden; */
     background: #fff;
     padding-right: 120px;
     box-shadow: 0 5px 10px #ddd;
@@ -113,7 +113,7 @@ export default {
 .tags ul {
     box-sizing: border-box;
     width: 100%;
-    height: 100%;
+    height: 40px;
     margin-bottom: 0;
     display: flex;
     align-items: center;

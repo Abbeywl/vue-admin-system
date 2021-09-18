@@ -38,6 +38,11 @@ export default new Router({
                     path: '/FormList',
                     component: () => import('../pages/FormList'),
                     meta: { title: '表单列表' }
+                },
+                    {
+                    path: '/workflow',
+                    component: () => import('../pages/workflow'),
+                    meta: { title: '工作流' }
                 }
             ]
         },
