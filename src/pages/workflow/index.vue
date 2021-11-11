@@ -21,7 +21,9 @@ export default {
                     name: '发起人',
                     type: 'start',
                     nodeId: 'sid-startevent',
-                    childNode: {}
+                    properties: {
+                        name: '所有人'
+                    }
                 }
             }
         };

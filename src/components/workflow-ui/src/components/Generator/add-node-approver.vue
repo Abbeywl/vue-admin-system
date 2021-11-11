@@ -1,285 +1,376 @@
 <template>
-  <AModal
-    :dialog.sync="dialog1"
-    @close="cancel"
-  >
-    <div class="panel-approver">
-      <div class="common-group approver-type-wrapper">
-        <div class="group-title">
-          选择审批对象
+  <div id="SIDE_MODAL">
+    <div v-if="dialog1" class="side-modal-wrapper">
+      <div class="side-modal-mask" />
+      <div class="side-modal">
+        <div class="side-modal-header">
+          <div class="ant-row-flex ant-row-flex-middle editable-text-field">
+            <div class="ant-col ant-col-17 editable-text-col">
+              <a-input placeholder="" v-model="node.name" />
+            </div>
+          </div>
         </div>
-        <div
-          class="group-content"
-        >
-          <div>
-            <div
-              class="ant-radio-group ant-radio-group-outline"
-            >
-              <label
-                v-for="(a, index) in approvers"
-                :key="index"
-                :class="[currentApp === a.value ? 'ant-radio-wrapper ant-radio-wrapper-checked' : 'ant-radio-wrapper']"
-                @click="setApprover(a)"
-              >
-                <span :class="[currentApp === a.value ? 'ant-radio ant-radio-checked' : 'ant-radio']">
-                  <input
-                    type="radio"
-                    class="ant-radio-input"
-                    :value="a.value"
-                  ><span class="ant-radio-inner" /></span>
-                <span>{{ a.label }}</span>
-              </label>
-            </div>
-          </div>
-          <div
-            v-if="currentApp === 'target_label' && !showAddRole"
-            class="approver-actions"
-          >
-            <button
-              type="button"
-              class="ant-btn ant-btn-primary"
-              ant-click-animating-without-extra-node="false"
-              @click="addRole"
-            >
-              <i
-                aria-label="icon: plus"
-                class="anticon anticon-plus"
-                style="color: rgb(255, 255, 255);"
-              ><svg
-                viewBox="64 64 896 896"
-                focusable="false"
-                class=""
-                data-icon="plus"
-                width="1em"
-                height="1em"
-                fill="currentColor"
-                aria-hidden="true"
-              ><path d="M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z" /><path d="M176 474h672q8 0 8 8v60q0 8-8 8H176q-8 0-8-8v-60q0-8 8-8z" /></svg></i><span>添加角色</span>
-            </button>
-          </div>
-          <div
-            v-if="showAddRole"
-            class="ant-row-flex ant-row-flex-space-around ant-row-flex-middle condition-group"
-          >
-            角色名&nbsp;&nbsp;
-            <div
-              class="ant-select ant-select-enabled"
-              style="min-width: 150px;"
-            >
-              <div class="ant-input-number-input-wrap">
-                <input
-                  v-model="properties1.actionerRules[0].labelNames"
-                  class="ant-input-number-input"
-                  placeholder="输入角色名"
-                >
-              </div>
-            </div>
-          </div>
-          <div
-            v-if="currentApp === 'target_management'"
-            class="approver-actions"
-          >
-            发起人的&nbsp;&nbsp;<div
-              class="ant-select ant-select-enabled"
-              style="min-width: 150px;"
-            >
-              <div
-                class="ant-select-selection ant-select-selection--single"
-                aria-expanded="false"
-                tabindex="0"
-              >
-                <div
-                  class="ant-select-selection__rendered"
-                  data-spm-anchor-id="0.0.0.i263.2f244490UdKR44"
-                >
-                  <div
-                    class="ant-select-selection-selected-value"
-                    title="直接主管"
-                    style="display: block; opacity: 1;"
-                    data-spm-anchor-id="0.0.0.i265.2f244490UdKR44"
+        <div class="side-modal-body">
+          <div class="side-modal-body-content">
+            <ul class="tab-tilte">
+              <li :class="{ active: cur == 0 }" @click="cur = 0">发起人</li>
+              <li :class="{ active: cur == 1 }" @click="cur = 1">设置</li>
+            </ul>
+            <div class="tab-content">
+              <div v-show="cur == 0">
+                <a-row>
+                  <a-col :span="6">
+                    <a-button
+                      type="primary"
+                      @click="addRole('role', targetRoleKeys)"
+                    >
+                      添加角色
+                    </a-button>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-button
+                    v-for="(item, index) of targetRoleKeys"
+                    :key="index + 'fdf'"
+                    class="btn"
+                    @click="addRole('', targetRoleKeys)"
                   >
-                    直接主管
-                  </div>
+                    {{ item }}
+                  </a-button>
+                </a-row>
+                <a-row>
+                  <a-col :span="6">
+                    <a-button
+                      type="primary"
+                      @click="addRole('user', targetUserKeys)"
+                    >
+                      添加用户
+                    </a-button>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-button
+                    v-for="(item, index) of targetUserKeys"
+                    :key="index + 'fdf'"
+                    class="btn"
+                    @click="addRole('', targetUserKeys)"
+                  >
+                    {{ item }}
+                  </a-button>
+                </a-row>
+              </div>
+              <div v-show="cur == 1" class="setting">
+                <div>
+                  <a-checkbox-group
+                    class="width_100 display_f align_c justify_c_b"
+                    @change="onChange"
+                  >
+                    <a-row :gutter="[0, 15]">
+                      <a-col :span="1">
+                        <a-checkbox :default-checked="false" value="提交" />
+                      </a-col>
+                      <a-col :span="4">
+                        <span>提交</span>
+                      </a-col>
+                      <a-col :span="19">
+                        <a-input :value="submitVal" />
+                      </a-col>
+                    </a-row>
+                    <a-row :gutter="[0, 15]">
+                      <a-col :span="1">
+                        <a-checkbox :default-checked="false" value="草稿" />
+                      </a-col>
+                      <a-col :span="4">
+                        <span>草稿</span>
+                      </a-col>
+                      <a-col :span="19">
+                        <a-input placeholder="草稿" :value="draftVal" />
+                      </a-col>
+                    </a-row>
+                    <a-row :gutter="[0, 15]">
+                      <a-col :span="1">
+                        <a-checkbox :default-checked="false" value="撤回" />
+                      </a-col>
+                      <a-col :span="4">
+                        <span>撤回</span>
+                      </a-col>
+                      <a-col :span="19">
+                        <a-input :value="recallVal" />
+                      </a-col>
+                    </a-row>
+                    <a-row :gutter="[0, 15]">
+                      <a-col :span="1">
+                        <a-checkbox :default-checked="false" value="退回" />
+                      </a-col>
+                      <a-col :span="4">
+                        <span>退回</span>
+                      </a-col>
+                      <a-col :span="19">
+                        <a-input :value="backVal" />
+                      </a-col>
+                    </a-row>
+                    <a-row :gutter="[0, 15]">
+                      <a-col :span="1">
+                        <a-checkbox :default-checked="false" value="催办" />
+                      </a-col>
+                      <a-col :span="4">
+                        <span>催办</span>
+                      </a-col>
+                      <a-col :span="19">
+                        <a-input :value="urgedVal" />
+                      </a-col>
+                    </a-row>
+                  </a-checkbox-group>
+                </div>
+                <div>
+                  <h2 class="t_left">审批方式</h2>
+                  <a-row>
+                    <a-radio-group
+                      v-model="approval"
+                      @change="approvalOnChange"
+                    >
+                      <a-radio value="or" class="radio_m">
+                        或签（一名审批人同意或拒绝即可）
+                      </a-radio>
+                      <a-radio value="add" class="radio_m">
+                        会签（无序会签，当审批达到会签比例时，则该审批通过）
+                      </a-radio>
+                    </a-radio-group>
+                  </a-row>
                 </div>
               </div>
-            </div><div class="area-auto-up" />
+            </div>
+            <!-- <textarea
+              type="text"
+              :value="JSON.stringify(properties)"
+              style="width: 100%; height: 100px; margin-top: 10px"
+            /> -->
           </div>
         </div>
-      </div>
-      <div class="common-group area-act-type-wrapper">
-        <div class="group-title">
-          <div>多人审批时采用的审批方式</div>
-        </div><div class="group-content">
-          <div class="ant-radio-group ant-radio-group-outline">
-            <label
-              v-for="(a, i) in actTypes"
-              :key="i"
-              :class="[currentAction === a.value ? 'ant-radio-wrapper ant-radio-wrapper-checked' : 'ant-radio-wrapper']"
-              @click="setAction(a)"
-            >
-              <span :class="[currentAction === a.value ? 'ant-radio ant-radio-checked' : 'ant-radio']">
-                <input
-                  type="radio"
-                  class="ant-radio-input"
-                  :value="a.value"
-                ><span class="ant-radio-inner" /></span>
-              <span>{{ a.label }}</span>
-            </label>
-          </div>
+
+        <div class="side-modal-footer">
+          <button type="button" class="ant-btn ant-btn-default" @click="cancel">
+            <span>取 消</span></button
+          ><button type="button" class="ant-btn ant-btn-primary" @click="save">
+            <span>保 存</span>
+          </button>
         </div>
-      </div>
-      <div class="common-group none-actioner-wrapper">
-        <button
-          type="button"
-          class="ant-btn ant-btn-default"
-          @click="cancel"
-        >
-          <span>取 消</span>
-        </button><button
-          type="button"
-          class="ant-btn ant-btn-primary"
-          @click="save"
-        >
-          <span>保 存</span>
-        </button>
-      </div>
-      <div class="common-group none-actioner-wrapper">
-        {{ properties1 }}
       </div>
     </div>
-  </AModal>
+    <addUserModal
+      ref="addUserModal"
+      :visible="visible"
+      @selectFun="selectFun"
+    />
+  </div>
 </template>
 <script>
-import AModal from './../AModal/AModal'
+// import AModal from './../AModal/AModal'
+import addUserModal from "../AddUserModal";
+// import addRoleModal from '../addRoleModal'
 export default {
   components: {
-    AModal
+    // AModal]
+    addUserModal,
+    // addRoleModal
   },
   props: {
     dialog: {
       type: Boolean,
-      default: false
+      default: false,
     },
     properties: {
       type: Object,
-      default: undefined
-    }
+      default: undefined,
+    },
+    node: {
+      type: Object,
+      default: undefined,
+    },
   },
   data: () => ({
+    visible: false,
+    Rolevisible: false,
     dialog1: false,
+    targetRoleKeys: [], // 默认角色
+    targetUserKeys: [], // 默认用户
+    checkedValues: [], // 设置选中项
+    cur: 0, // 默认选中第一个tab
     showAddRole: false,
-    currentApp: 'target_management',
-    currentAction: 'or',
-    temp: {},
-    approvers: [
-      { label: '主管', value: 'target_management', color: 'red' },
-      { label: '角色', value: 'target_label', color: 'green' }
-    ],
-    actTypes: [
-      { label: '或签（一名审批人同意或拒绝即可）', value: 'or', color: 'red' },
-      { label: '会签（须所有审批人同意）', value: 'and', color: 'green' }
-    ],
+    selectRole: [],
+    currentApp: "target_management",
+    currentAction: "or",
+    temp: {}, // 深拷贝一个node
     properties1: {
-      actionerRules: [{
-        type: 'target_management',
-        level: 1,
-        isEmpty: false,
-        autoUp: true,
-        actType: 'or'
-      }]
-    }
+      type: "notifier",
+      name: "请选择抄送人",
+      otherInfor: {
+        userList: [],
+        roleList: [],
+      },
+      setCheckType: [],
+      setCheckVal: {
+        submit: "提交",
+        draft: "草稿",
+        recall: "撤回",
+        urged: "催办",
+      },
+    },
+    submitVal: "提交",
+    draftVal: "草稿",
+    recallVal: "撤回",
+    urgedVal: "催办",
+    backVal: "退回",
+    approval: "or", // 审批方式
+    typeName: "", // 类型名称（如抄送人）
   }),
   watch: {
-    'dialog' (val) {
-      this.dialog1 = val
+    dialog(val) {
+      this.dialog1 = val;
     },
-    dialog1 (val) {
-      this.$emit('update:dialog', val)
-    }
+    dialog1(val) {
+      this.$emit("update:dialog", val);
+    },
+    properties: {
+      handler(val) {
+        console.log("=====ff===============", val);
+      },
+      deep: true,
+    },
   },
-  mounted () {
-    this.properties1 = this.properties
-    this.init()
-    Object.assign(this.temp, this.properties1)
+  mounted() {
+    console.log("接收的值", this.properties);
+
+    if (this.properties) {
+      this.properties1 = this.properties;
+    } else {
+      return false;
+    }
+    // // Object.assign(this.properties1, this.properties)
+    // if (this.properties1) {
+    if (!this.properties1.setCheckVal) return false;
+    this.submitVal = !this.properties1.setCheckVal.submit
+      ? this.submitVal
+      : this.properties1.setCheckVal.submit;
+    this.draftVal = !this.properties1.setCheckVal.draft
+      ? this.draftVal
+      : this.properties1.setCheckVal.draft;
+    this.recallVal = !this.properties1.setCheckVal.recall
+      ? this.recallVal
+      : this.properties1.setCheckVal.recall;
+    this.urgedVal = !this.properties1.setCheckVal.urged
+      ? this.urgedVal
+      : this.properties1.setCheckVal.urged;
+    this.backVal = !this.properties1.setCheckVal.back
+      ? this.backVal
+      : this.properties1.setCheckVal.back;
+
+    this.targetRoleKeys = this.properties1.otherInfor.roleList;
+    this.targetUserKeys = this.properties1.otherInfor.userList;
+    // this.init()
+    Object.assign(this.temp, this.properties1);
+    // }
   },
   methods: {
-    init () {
-      this.properties1 = this.properties1 ? this.properties1 : {
-        actionerRules: [
-          {
-            type: 'target_management',
-            level: 1,
-            isEmpty: false,
-            autoUp: true,
-            actType: 'or'
-          }
-        ]
-      }
-      var rule = this.properties1.actionerRules && this.properties1.actionerRules[0]
-      if (rule) {
-        this.currentApp = rule.type
-        this.currentAction = rule.actType
-        if (rule.labelNames) this.showAddRole = true
-      }
+    // 添加角色
+    addRole(type, _targetKeys) {
+      this.$refs.addUserModal.getAddType(type, _targetKeys);
+      this.visible = true;
     },
-    save () {
-      var rule = this.properties1.actionerRules[0]
-      switch (rule.type) {
-        case 'target_label':
-          if (!rule.labelNames || rule.labelNames === '') {
-            alert('角色不能为空')
-            return
-          }
-          break
-      }
-      this.dialog1 = false
-      Object.assign(this.temp, this.properties1)
-      this.$emit('setProperties', this.properties1)
+    onClose() {
+      this.dialog1 = false;
     },
-    cancel () {
-      this.dialog1 = false
-      this.properties1 = {}
-      Object.assign(this.properties1, this.temp)
-      this.init()
-      this.$emit('setProperties', this.properties1)
+    onChange(checkedValues) {
+      this.checkedValues = checkedValues;
     },
-    setApprover (app) {
-      this.currentApp = app.value
-      if (app.value === 'target_label') {
-
-      } else {
-        this.showAddRole = false
+    approvalOnChange(e) {
+      this.approval = e.target.value;
+      console.log("radio checked", this.approval);
+    },
+    init() {},
+    // 保存审核人
+    save() {
+      var setCheckType = this.checkedValues;
+      var otherInfor = {
+        userList: this.targetUserKeys,
+        roleList: this.targetRoleKeys,
+      };
+      this.dialog1 = false;
+      this.properties1.name = this.targetUserKeys;
+      this.properties1.otherInfor = otherInfor;
+      this.properties1.setCheckType = setCheckType;
+      if (this.properties.type !== "start") {
+        this.properties1.approval = this.approval;
       }
-      this.properties1.actionerRules = []
-      switch (app.value) {
-        case 'target_management':
-          this.properties1.actionerRules.push({
-            type: 'target_management',
-            level: 1,
-            isEmpty: false,
-            autoUp: true
-          })
-          break
-        case 'target_label':
-          this.properties1.actionerRules.push({
-            type: 'target_label',
-            labelNames: '',
-            labels: '',
-            isEmpty: false,
-            memberCount: 1,
-            actType: 'or'
-          })
-          break
+      Object.assign(this.temp, this.properties1);
+      this.$emit("setProperties", this.properties1);
+    },
+    cancel() {
+      this.dialog1 = false;
+      this.properties1 = {};
+      Object.assign(this.properties1, this.temp);
+      // this.init()
+      this.$emit("setProperties", this.properties1);
+    },
+    // 获取角色key
+    selectFun(issave, val, type) {
+      this.visible = !this.visible;
+      if (!issave) return;
+      this.selectRole = [...val];
+      this.targetKeys = this.selectRole;
+      switch (type) {
+        case "user":
+          this.targetUserKeys = this.selectRole;
+          break;
         default:
+          this.targetRoleKeys = this.selectRole;
+          break;
       }
+      console.log("接收值", type, this.selectRole);
     },
-    setAction (act) {
-      this.currentAction = act.value
-      this.properties1.actionerRules[0].actType = act.value
-    },
-    addRole () {
-      this.showAddRole = true
-    }
-  }
-}
+  },
+};
 </script>
+
+<style scoped>
+ul {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-bottom: 1px solid #ccc;
+}
+ul li {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tab-tilte {
+  width: 100%;
+}
+.tab-tilte li {
+  float: left;
+  width: 25%;
+  padding: 10px 0;
+  text-align: center;
+  cursor: pointer;
+}
+/* 点击对应的标题添加对应的背景颜色 */
+.tab-tilte .active {
+  border-bottom: 2px solid #09f;
+  color: #09f;
+}
+.tab-content div button {
+  margin-bottom: 15px;
+  margin-right: 10px;
+}
+/* .setting {
+  display: flex;
+} */
+.radio_m {
+  display: block;
+  height: 30px;
+  line-height: 30px;
+  text-align: left;
+}
+</style>

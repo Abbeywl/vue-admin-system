@@ -10,7 +10,7 @@
   </div>
 </template>
 <script>
-import ConditionNodeBox from "./condition-node-box";
+import ConditionNodeBox from "./shunt-node-box.vue";
 export default {
   name: "ConditionNode",
   components: {

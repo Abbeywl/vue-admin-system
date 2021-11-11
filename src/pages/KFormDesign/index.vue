@@ -26,6 +26,7 @@ export default {
     methods: {
         handleSave(values) {
             let jsonhtml = JSON.parse(values);
+
             if (this.titleVal == '') {
                 this.$message.warning('请填写表单名称');
             } else if (jsonhtml.list.length == 0) {
@@ -34,9 +35,15 @@ export default {
                 this.saveData.htmlJson = values;
                 this.saveData.menuName = this.titleVal;
                 this.saveData.tableName = pinyin.getFullChars(this.titleVal);
+
                 SaveFormTableInfo(this.saveData)
                     .then((res) => {
+                        debugger;
                         this.$message.success('保存成功');
+                        //清空数据
+                        this.$refs.title.hideResetHint = true;
+                        this.$refs.title.handleReset(true);
+                        this.$emit('handleReset', true);
                     })
                     .catch((err) => {
                         this.$message.success('保存失败');

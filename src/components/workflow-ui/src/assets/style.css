@@ -262,12 +262,14 @@ button {
 }
 
 .editable-title {
+  border: none;
   line-height: 15px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   border-bottom: 1px dashed transparent;
   font-size: 0.7em;
+  background: none;
 }
 
 .editable-title:before {
@@ -890,7 +892,7 @@ handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner {
   justify-content: space-between;
   height: 40px;
   width: 125px;
-  right: 40px;
+  left: 40px;
   margin-top: 30px;
   z-index: 10;
 }
@@ -989,7 +991,10 @@ handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner {
   position: relative;
   font-size: 14px;
   padding: 16px;
-  padding-right: 30px;
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  /* padding-right: 30px; */
 }
 
 .node-wrap-box .content .text {
@@ -1029,7 +1034,7 @@ handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner {
 
 .start-node.node-wrap-box .content .text {
   display: block;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 
 .start-node:before {
@@ -1228,7 +1233,7 @@ handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner {
   min-height: 72px;
   background: #fff;
   border-radius: 4px;
-  padding: 14px 19px;
+  /* padding: 14px 19px; */
   cursor: pointer;
 }
 
@@ -1266,12 +1271,12 @@ handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner {
   font-size: 14px;
   color: #191f25;
   text-align: left;
-  margin-top: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  padding: 16px;
 }
 
 .dingflow-design .auto-judge .sort-right {
@@ -1294,6 +1299,9 @@ handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner {
   color: #15bc83;
   text-align: left;
   line-height: 16px;
+  padding: 3px 19px;
+  background: cornflowerblue;
+  color: white;
 }
 
 .dingflow-design .auto-judge .title-wrapper .editable-title {
@@ -1772,11 +1780,10 @@ handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner {
 }
 
 .side-modal-body {
-  bottom: 60px;
-  position: absolute;
-  top: 57px;
-  width: 100%;
-  overflow: scroll;
+  padding: 0 24PX;
+ width: 100%;
+  min-height: 50vh;
+ overflow: AUTO;
 }
 
 .side-modal-footer {
@@ -2128,4 +2135,22 @@ tabs-top-content.ant-tabs-content-animated {
   transition: width .3s cubic-bezier(.645, .045, .355, 1), opacity .3s cubic-bezier(.645, .045, .355, 1), color .3s cubic-bezier(.645, .045, .355, 1);
   user-select: none;
   pointer-events: none;
+}
+.width_100{
+  width: 100%;
+}
+.display_f{
+  display: flex;
+}
+.align_c{
+  align-items: center;
+}
+.justify_c_b{
+  justify-content: space-between;
+}
+.t_center{
+text-align: center;
+}
+.t_left{
+  text-align: left;
 }

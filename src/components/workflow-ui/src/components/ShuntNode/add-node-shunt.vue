@@ -58,13 +58,13 @@
                       当审批单同时满足以下条件时进入此流程
                     </div>
                   </div>
-                  <!-- <ConditionGroup
+                  <ConditionGroup
                     v-for="(item, index) in properties.conditions[0]"
                     :key="index"
                     :data.sync="item"
                     :pos="index"
                     @del="delGroup(index)"
-                  /> -->
+                  />
                   <ConditionAddBtn @click="addCondition" />
                   <div>
                     <button
@@ -92,11 +92,11 @@
   </div>
 </template>
 <script>
-// import ConditionGroup from "./condition-group";
-import ConditionAddBtn from "./condition-add-btn";
+import ConditionGroup from "./shunt-group";
+import ConditionAddBtn from "./shunt-add-btn";
 export default {
   components: {
-    // ConditionGroup,
+    ConditionGroup,
     ConditionAddBtn,
   },
   props: {

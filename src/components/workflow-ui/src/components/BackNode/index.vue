@@ -5,8 +5,8 @@
   </div>
 </template>
 <script>
-import NodeWrapBox from "./node-wrap-box";
-import AddNodeBtnBox from "./add-node-btn-box";
+import NodeWrapBox from "../Generator/node-wrap-box.vue";
+import AddNodeBtnBox from "../Generator/add-node-btn-box";
 export default {
   name: "NodeWrap",
   components: {
@@ -17,14 +17,6 @@ export default {
     node: {
       type: Object,
       default: undefined,
-    },
-  },
-  watch: {
-    node: {
-      handler(val) {
-        console.log("====================", val);
-      },
-      deep: true,
     },
   },
   methods: {

@@ -110,6 +110,16 @@ export default {
         name: "发起人",
         type: "start",
         nodeId: "sid-startevent",
+        properties: {
+          type: "start",
+          name: '所有人',
+          otherInfor: {
+            userList: [],
+            roleList: [],
+          },
+          setCheckType: ["提交", "草稿"],
+          setCheckVal: { submit: "提交", draft: "草稿", recall: "撤回", urged: "催办" }
+        },
         childNode: {},
       },
     },
@@ -124,6 +134,7 @@ export default {
   },
   mounted() {
     if (this.data && this.data.node) {
+      console.log("sssssssss", this.data);
       this.data1 = this.data;
     }
     if (!this.data1.node) {
@@ -137,6 +148,9 @@ export default {
         name: "发起人",
         type: "start",
         nodeId: "sid-startevent",
+        properties: {
+          name: '所有人'
+        }
       };
     },
     iteratorData(data) {
@@ -149,7 +163,8 @@ export default {
       this.key++;
     },
     delNode(node) {
-      console.log("删除节点:" + node.properties.actionerRules[0].labelNames);
+      // wanglan  console.log("删除节点:" + node.properties.actionerRules[0].labelNames);
+      console.log("删除节点:");
       delNode(node, this.data1.node, this.items);
       this.key++;
       // this.iteratorData(this.data1.node)
@@ -157,6 +172,7 @@ export default {
       // console.log(this.items)
     },
     save() {
+      console.log("最外层", this.node);
       var errors = checkData(this.data1.node);
       if (errors.length > 0) {
         this.errorsModal = true;
@@ -164,7 +180,6 @@ export default {
         return;
       }
       this.$emit("ok", this.data1);
-      console.log(this.data1);
     },
     preview() {
       var errors = checkData(this.data1.node);

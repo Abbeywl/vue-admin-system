@@ -35,7 +35,18 @@ export const checkData = (data) => {
           }
         })
         break
+      case 'shunt':
+        temp.conditionNodes.forEach(c => {
+          // if (!c.properties || c.properties.conditions.length === 0 || c.properties.conditions[0].length === 0) {
+          //   errors.push({
+          //     name: c.name,
+          //     nodeId: c.nodeId
+          //   })
+          // }
+        })
+        break
       default:
+        break
     }
     // 判断节点是否有子节点
     if (temp.childNode != null) {
@@ -154,10 +165,12 @@ export const delConditionNode = (condNodeDel, node) => {
   }
   // 只剩下一个条件分支
 }
+// 修改数据
 export const setConditionFactor = (condNode, node) => {
   node.conditionNodes.some((cond, i) => {
     if (cond.nodeId === condNode.nodeId) {
       cond.properties = condNode.properties
+      cond.name = condNode.name
       return true
     }
   })
