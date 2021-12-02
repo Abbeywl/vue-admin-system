@@ -61,10 +61,7 @@
               </div>
               <div v-show="cur == 1" class="setting">
                 <div>
-                  <a-checkbox-group
-                    class="width_100 display_f align_c justify_c_b"
-                    @change="onChange"
-                  >
+                  <a-checkbox-group class="width_100" @change="onChange">
                     <a-row :gutter="[0, 15]">
                       <a-col :span="1">
                         <a-checkbox :default-checked="false" value="提交" />
@@ -140,11 +137,11 @@
                 </div>
               </div>
             </div>
-            <!-- <textarea
+            <textarea
               type="text"
               :value="JSON.stringify(properties)"
               style="width: 100%; height: 100px; margin-top: 10px"
-            /> -->
+            />
           </div>
         </div>
 

@@ -112,13 +112,18 @@ export default {
         nodeId: "sid-startevent",
         properties: {
           type: "start",
-          name: '所有人',
+          name: "所有人",
           otherInfor: {
             userList: [],
             roleList: [],
           },
           setCheckType: ["提交", "草稿"],
-          setCheckVal: { submit: "提交", draft: "草稿", recall: "撤回", urged: "催办" }
+          setCheckVal: {
+            submit: "提交",
+            draft: "草稿",
+            recall: "撤回",
+            urged: "催办",
+          },
         },
         childNode: {},
       },
@@ -141,6 +146,16 @@ export default {
       this.initialNode();
     }
     this.iteratorData(this.data1.node);
+    this.$axios
+      .get("/bim-admin/bmsMaterial/selectByName")
+      .then((response) => {
+        if (response.data) {
+          console.log(response.data);
+        }
+      })
+      .catch((err) => {
+        console.log("请求失败", err);
+      });
   },
   methods: {
     initialNode() {
@@ -149,8 +164,8 @@ export default {
         type: "start",
         nodeId: "sid-startevent",
         properties: {
-          name: '所有人'
-        }
+          name: "所有人",
+        },
       };
     },
     iteratorData(data) {

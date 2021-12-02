@@ -1,14 +1,13 @@
 <template>
     <div class="main">
-        <workflow :data="data" @ok="ok" />
+        <!-- //<workflow :data="data" @ok="ok" /> -->
+        <workflow :data.sync="data" @ok="ok" />
     </div>
 </template>
 <script>
-import workflow from '../../components/workflow-ui/src/components/Generator';
-import '../../components/workflow-ui/lib/workflow-ui.css';
-// import workflow from '../../components/workflow-ui/src/components/Generator';
-// import 'workflow-ui/lib/workflow-ui.css';
-
+import workflow from '../../components/workflow-ui/src/components/Generator/Main.vue';
+// import '../../components/workflow-ui/lib/workflow-ui.css';
+import '../../components/workflow-ui/src/assets/style.css';
 export default {
     components: {
         workflow
