@@ -64,7 +64,7 @@ export const iteratorData = (resultArr, data) => {
   arr.push(data)
   while (arr.length > 0) {
     var temp = arr.pop()
-    if (temp.type === 'route') {
+    if (temp.type === 'route'||temp.type === 'shunt') {
       resultArr.push(temp)
     } else {
       var item = {
@@ -133,6 +133,8 @@ export const deleteNode = (nodeDel, node) => {
       nodeDel.childNode.prevId = temp.nodeId
       temp.childNode = nodeDel.childNode
       return
+    } else {
+      break
     }
     // 循环结束
     if (temp.childNode != null) temp = temp.childNode

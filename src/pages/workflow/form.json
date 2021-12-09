@@ -1,0 +1,113 @@
+{
+	"list": [
+		{
+			"type": "input",
+			"label": "工作流名称",
+			"icon": "icon-write",
+			"options": {
+				"type": "text",
+				"width": "100%",
+				"defaultValue": "",
+				"placeholder": "请输入",
+				"clearable": false,
+				"maxLength": null,
+				"addonBefore": "",
+				"addonAfter": "",
+				"hidden": false,
+				"disabled": false
+			},
+			"model": "processName",
+			"key": "input_1638781625900",
+			"help": "",
+			"rules": [
+				{
+					"required": true,
+					"message": "必填项"
+				}
+			]
+		},
+		{
+			"type": "select",
+			"label": "流程状态",
+			"options": {
+				"width": "100%",
+				"multiple": false,
+				"disabled": false,
+				"clearable": false,
+				"hidden": false,
+				"placeholder": "请选择",
+				"dynamicKey": "",
+				"dynamic": false,
+				"options": [
+					{
+						"value": "InUse",
+						"label": "在使用"
+					},
+					{
+						"value": "Draft",
+						"label": "草稿"
+					}
+				],
+				"showSearch": false,
+				"defaultValue": "InUse"
+			},
+			"model": "processStatus",
+			"key": "select_1638781917285",
+			"help": "",
+			"rules": [
+				{
+					"required": true,
+					"message": "必填项"
+				}
+			]
+		},
+		{
+			"type": "textarea",
+			"label": "描述",
+			"icon": "icon-edit",
+			"options": {
+				"width": "100%",
+				"minRows": 4,
+				"maxRows": 6,
+				"maxLength": null,
+				"defaultValue": "",
+				"clearable": false,
+				"hidden": false,
+				"disabled": false,
+				"placeholder": "请输入"
+			},
+			"model": "description",
+			"key": "textarea_1638781662705",
+			"help": "",
+			"rules": [
+				{
+					"required": false,
+					"message": "必填项"
+				}
+			]
+		}
+	],
+	"config": {
+		"layout": "horizontal",
+		"labelCol": {
+			"xs": 4,
+			"sm": 4,
+			"md": 4,
+			"lg": 4,
+			"xl": 4,
+			"xxl": 4
+		},
+		"labelWidth": 100,
+		"labelLayout": "flex",
+		"wrapperCol": {
+			"xs": 18,
+			"sm": 18,
+			"md": 18,
+			"lg": 18,
+			"xl": 18,
+			"xxl": 18
+		},
+		"hideRequiredMark": false,
+		"customStyle": ""
+	}
+}

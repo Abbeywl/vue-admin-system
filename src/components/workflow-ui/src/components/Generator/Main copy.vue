@@ -2,7 +2,7 @@
     <div>
         <div class="fd-nav">
             <div class="fd-nav-left">
-                <div class="fd-nav-back" @click="colse">
+                <div class="fd-nav-back">
                     <i aria-label="icon: left" class="anticon anticon-left"
                         ><svg
                             viewBox="64 64 896 896"
@@ -23,12 +23,12 @@
             </div>
             <div class="fd-nav-center">
                 <div class="fd-nav-container">
-                    <div class="fd-nav-item"><span class="order-num">1</span>{{ title }}</div>
+                    <div class="fd-nav-item"><span class="order-num">1</span>{{ data1.title }}</div>
                 </div>
             </div>
             <div class="fd-nav-right">
                 <button type="button" class="ant-btn button-preview" @click="preview">
-                    <span>保 存</span>
+                    <span>预 览</span>
                 </button>
                 <button type="button" class="ant-btn button-preview" @click="save">
                     <span>发 布</span>
@@ -68,17 +68,6 @@ import AModal from './../AModal/AModal';
 import EndNode from './end-node';
 import ErrorsModal from './errors-modal';
 import { iteratorData, addNewNode, delNode, checkData } from './process';
-const defaultData = {
-    title: '请假',
-    node: {
-        name: '发起人',
-        type: 'start',
-        nodeId: 'sid-startevent',
-        properties: {
-            name: '所有人'
-        }
-    }
-};
 export default {
     name: 'WorkflowUi',
     components: {
@@ -90,10 +79,6 @@ export default {
         data: {
             type: Object,
             default: undefined
-        },
-        title: {
-            type: String,
-            default: '工作流'
         }
     },
     data: () => ({
@@ -106,41 +91,36 @@ export default {
         zoomStyle: {
             transform: 1
         },
+        workflowTitle: '',
         data1: {
-            // title: '请假',
-            // node: {
-            // name: '发起人',
-            // type: 'start',
-            // nodeId: 'sid-startevent',
-            // properties: {
-            //     type: 'start',
-            //     name: '所有人',
-            //     otherInfor: {
-            //         userList: [],
-            //         roleList: []
-            //     },
-            //     setCheckType: ['提交', '草稿'],
-            //     setCheckVal: {
-            //         submit: '提交',
-            //         draft: '草稿',
-            //         recall: '撤回',
-            //         urged: '催办'
-            //     }
-            // },
-            // childNode: {}
-            // }
+            title: '请假',
+            node: {
+                name: '发起人',
+                type: 'start',
+                nodeId: 'sid-startevent',
+                properties: {
+                    type: 'start',
+                    name: '所有人',
+                    otherInfor: {
+                        userList: [],
+                        roleList: []
+                    },
+                    setCheckType: ['提交', '草稿'],
+                    setCheckVal: {
+                        submit: '提交',
+                        draft: '草稿',
+                        recall: '撤回',
+                        urged: '催办'
+                    }
+                },
+                childNode: {}
+            }
         }
     }),
     watch: {
         data: {
-            handler(val, newval) {
-                console.log(JSON.stringify(val));
-                console.log(JSON.stringify(newval));
-                if (!val.node) {
-                    val.node = defaultData;
-                }
-                this.data1.node = val.node;
-                this.iteratorData(this.data1.node);
+            handler(val) {
+                this.data1 = val;
             },
             deep: true
         }
@@ -149,25 +129,32 @@ export default {
         if (this.data && this.data.node) {
             this.data1 = this.data;
         }
-        // if (!this.data1.node) {
-        this.initialNode();
-        // }
+        if (!this.data1.node) {
+            this.initialNode();
+        }
         this.iteratorData(this.data1.node);
+        // this.$axios
+        //   .get("/bim-admin/bmsMaterial/selectByName")
+        //   .then((response) => {
+        //     if (response.data) {
+        //       console.log(response.data);
+        //     }
+        //   })
+        //   .catch((err) => {
+        //     console.log("请求失败", err);
+        //   });
     },
     methods: {
         initialNode() {
-            if (!this.data1.node) {
-                this.data1.node = {
-                    name: '发起人',
-                    type: 'start',
-                    nodeId: 'sid-startevent',
-                    properties: {
-                        name: '所有人'
-                    }
-                };
-            }
+            this.data1.node = {
+                name: '发起人',
+                type: 'start',
+                nodeId: 'sid-startevent',
+                properties: {
+                    name: '所有人'
+                }
+            };
         },
-        refreshData(data) {},
         iteratorData(data) {
             this.items = [];
             iteratorData(this.items, data);
@@ -187,23 +174,22 @@ export default {
             // console.log(this.items)
         },
         save() {
-            console.log('最外层', this.data1);
-            //  var errors = checkData(this.data1.node);
-            // if (errors.length > 0) {
-            //     this.errorsModal = true;
-            //     this.errors = errors;
-            //     return;
-            // }
+            console.log('最外层', this.node);
+            var errors = checkData(this.data1.node);
+            if (errors.length > 0) {
+                this.errorsModal = true;
+                this.errors = errors;
+                return;
+            }
             this.$emit('ok', this.data1);
         },
         preview() {
-            // console.log(this.data1.node);
-            // var errors = checkData(this.data1.node);
-            // if (errors.length > 0) {
-            //     this.errorsModal = true;
-            //     this.errors = errors;
-            //     return;
-            // }
+            var errors = checkData(this.data1.node);
+            if (errors.length > 0) {
+                this.errorsModal = true;
+                this.errors = errors;
+                return;
+            }
             this.viewModal = true;
         },
         // 缩放
@@ -213,9 +199,6 @@ export default {
             else if (zv > 200) zv = 200;
             this.zoomValue = zv;
             this.zoomStyle = { transform: `scale(${zv / 100})` };
-        },
-        colse() {
-            this.$parent.closeFn();
         }
     }
 };

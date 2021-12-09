@@ -39,10 +39,15 @@ export default new Router({
                     component: () => import('../pages/FormList'),
                     meta: { title: '表单列表' }
                 },
-                    {
+                {
                     path: '/workflow',
                     component: () => import('../pages/workflow'),
                     meta: { title: '工作流' }
+                },
+                {
+                    path: '/processInfo',
+                    component: () => import('../pages/workflow/processInfo.vue'),
+                    meta: { title: '工作流表格' }
                 }
             ]
         },

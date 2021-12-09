@@ -53,7 +53,11 @@ export default {
                     name: '工作流',
                     path: '/workflow',
                     key: '3',
-                    icon: 'setting'
+                    icon: 'setting',
+                    children: [
+                        { name: '工作流表格', path: '/processInfo', icon: 'setting', key: '3.1' },
+                        { name: '创建工作流', path: '/workflow', icon: 'setting', key: '3.2' }
+                    ]
                 }
             ]
         };
