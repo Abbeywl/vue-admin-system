@@ -1787,7 +1787,7 @@ handler-wrap .ant-input-number-handler .ant-input-number-handler-up-inner {
 }
 
 .side-modal-footer {
-  position: absolute;
+  /* position: absolute; */
   bottom: 0;
   width: 100%;
   z-index: 10;

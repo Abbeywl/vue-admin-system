@@ -1,21 +1,32 @@
 <template>
-    <div class="">
+    <div class="" style="height: 100">
         <a-row>
             <a-col :span="18" class="btn_group">
-                <a-button @click="showModal" type="primary"> 新增巡检点 </a-button>
-                <a-button @click="handleAdd" type=""> 导入EXCEL </a-button>
-                <a-button @click="handleAdd" type=""> 下载模板 </a-button>
+                <a-button @click="isAdd = !isAdd" type="primary"> {{ !isAdd ? '新增' : '返回' }} </a-button>
+                <!-- <a-button @click="handleAdd" type=""> 导入EXCEL </a-button>
+                <a-button @click="handleAdd" type=""> 下载模板 </a-button> -->
             </a-col>
 
             <a-col :span="6" class="search">
                 <a-input-search placeholder="搜索" style="width: 200px" @search="onSearch" />
             </a-col>
         </a-row>
-        <a-row>
-            <a-table :columns="columns" :data-source="data" rowKey="ID">
+        <a-row v-show="isAdd">
+            <k-form-design toolbarsTop :showHead="true" style="height: 100%" @save="handleSave" ref="kfd" />
+        </a-row>
+        <a-row v-show="!isAdd">
+            <a-table
+                :columns="columns"
+                :data-source="data"
+                :rowKey="
+                    (record, index) => {
+                        return index;
+                    }
+                "
+            >
                 <template slot="action" slot-scope="record" class="oprea">
-                    <a class="" @click="operationEdit(record)">编辑</a>
-                    <a-divider type="vertical" />
+                    <!-- <a class="" @click="operationEdit(record)">编辑</a>
+                    <a-divider type="vertical" /> -->
                     <a class="" @click="operationDelete(record)">删除</a>
                     <a-divider type="vertical" />
                     <a class="" @click="operationRead(record)">表单发起</a>
@@ -24,16 +35,12 @@
                 </template>
             </a-table>
         </a-row>
-        <a-modal
-            :title="modalTitle"
-            :visible="visible"
-            :confirm-loading="confirmLoading"
-            @ok="handleOk"
-            @cancel="handleCancel"
-            ok-text="保存"
-            cancel-text="取消"
-        >
-            <k-form-build :value="jsonData" ref="kfb" v-show="isForm" />
+        <a-modal :title="DetailEdit ? '记录' : '表单发起'" :visible="visible" :width="800" @cancel="handleCancel">
+            <template slot="footer">
+                <a-button key="back" @click="handleCancel" v-show="detailFooter"> 取消 </a-button>
+                <a-button key="submit" type="primary" :loading="confirmLoading" @click="handleOk" v-show="detailFooter"> 保存 </a-button>
+            </template>
+            <k-form-build :value="jsonData" ref="kfBulid" v-show="isForm" />
             <a-table
                 v-show="!isForm"
                 :columns="historyColumns"
@@ -56,7 +63,18 @@
 
 <script>
 import formJson from './form.json';
-import { GetFormList, DeleteFormInfo, SaveTableData, GetTableDataList, UpdateTableDataInfo, DeleteTableDataInfo } from '@/api/index.js';
+import '@/components/k-form-design/styles/form-design.less';
+import {
+    GetFormList,
+    DeleteFormInfo,
+    SaveTableData,
+    GetTableDataList,
+    UpdateTableDataInfo,
+    DeleteTableDataInfo,
+    SaveFormTableInfo
+} from '@/api/index.js';
+const pinyin = require('js-pinyin');
+
 const data = [];
 var columns = [
     {
@@ -64,7 +82,7 @@ var columns = [
         dataIndex: 'MenuName',
         key: 'MenuName'
     },
-    { title: '创建人', dataIndex: 'CreatorId', key: 'CreatorId' },
+    { title: '创建人', dataIndex: 'CreatorName', key: 'CreatorName' },
     {
         title: '操作',
         key: 'operation',
@@ -77,7 +95,7 @@ const historyColumns = [
         dataIndex: 'MenuName',
         key: 'MenuName'
     },
-    { title: '创建人', dataIndex: 'CreatorId', key: 'CreatorId' },
+    { title: '创建人', dataIndex: 'CreatorName', key: 'CreatorName' },
     {
         title: '操作',
         key: 'operation',
@@ -96,10 +114,12 @@ export default {
     components: {},
     data() {
         return {
+            isAdd: false,
             jsonData: {},
             data,
             columns,
             historyColumns,
+            detailFooter: false,
             historyData: [],
             visible: false,
             isForm: true,
@@ -110,22 +130,57 @@ export default {
             tableName: '',
 
             tableParams: {
-                isPaging: true,
-                pageIndex: 1,
-                pageSize: 10,
-                pageTotalCount: 0,
-                fuzzyQueryCondition: '',
-                selectOrder: ''
+                IsPaging: true,
+                PageIndex: 0,
+                PageSize: 10
             },
             rowID: 0,
             TableRow: {},
             DetailEdit: false,
-            detailId: 0
+            detailId: 0,
+            titleVal: '',
+            saveData: {
+                FormXml: '',
+                MenuName: '',
+                TableName: ''
+            }
         };
     },
     computed: {},
     watch: {},
     methods: {
+        handleSave(values) {
+            let jsonhtml = JSON.parse(values);
+
+            if (this.titleVal == '') {
+                this.$message.warning('请填写表单名称');
+            } else if (jsonhtml.list.length == 0) {
+                this.$message.warning('请选择控件');
+            } else {
+                this.saveData.FormXml = values;
+                this.saveData.MenuName = this.titleVal;
+                this.saveData.TableName = pinyin.getFullChars(this.titleVal);
+
+                SaveFormTableInfo(this.saveData)
+                    .then((res) => {
+                        this.$message.success('保存成功');
+                        //清空数据
+                        this.$refs.kfd.handleReset(true);
+                    })
+                    .catch((err) => {
+                        this.$message.success('保存失败');
+                        console.log(err);
+                    });
+            }
+        },
+        async getdata() {
+            const countData = await SaveFormTableInfo(this.saveData);
+            if (countData.status == 1) {
+                this.count = countData.count;
+            } else {
+                throw new Error('获取数据失败');
+            }
+        },
         GetFormListFn() {
             GetFormList(this.tableParams).then((res) => {
                 this.data = res.rows;
@@ -134,13 +189,10 @@ export default {
 
         GetTableDataListFn(tableName) {
             let obj = {
-                isPaging: true,
-                pageIndex: 1,
-                pageSize: 10,
-                pageTotalCount: 0,
-                fuzzyQueryCondition: '',
-                selectOrder: '',
-                tableName: tableName
+                IsPaging: true,
+                PageIndex: 1,
+                PageSize: 10,
+                TableName: tableName
             };
             GetTableDataList(obj).then((res) => {
                 let columnsArr = [];
@@ -156,6 +208,7 @@ export default {
                 let opera = {
                     title: '操作',
                     key: 'operation',
+
                     scopedSlots: { customRender: 'detailAction' }
                 };
                 columnsArr.push(opera);
@@ -170,23 +223,26 @@ export default {
         },
         operation(type, row) {
             let { ID } = row;
+            let { TableName } = this.TableRow;
             this.detailId = ID;
 
             switch (type) {
                 case 'DetailEdit':
+                    this.isForm = true;
+                    this.detailFooter = true;
+                    this.DetailEdit = true;
                     let Copy = JSON.stringify(row);
                     Copy = JSON.parse(Copy);
                     this.$delete(Copy, 'ID');
-                    this.isForm = true;
+
                     // 使用k-form-design组件的form属性修改表单数据
                     let parentTableRow = this.TableRow;
-                    let htmljson = JSON.parse(parentTableRow.HtmlJson);
+                    let htmljson = JSON.parse(parentTableRow.FormXml);
                     this.tableName = parentTableRow.TableName;
                     this.modalTitle = parentTableRow.MenuName;
                     this.jsonData = htmljson;
-                    this.DetailEdit = true;
                     this.$nextTick(function () {
-                        this.$refs.kfb.form.setFieldsValue(Copy);
+                        this.$refs.kfBulid.form.setFieldsValue(Copy);
                     });
 
                     break;
@@ -198,7 +254,7 @@ export default {
                         okText: '确认',
                         cancelText: '取消',
                         async onOk() {
-                            DeleteTableDataInfo(ID).then((res) => {
+                            DeleteTableDataInfo(ID, TableName).then((res) => {
                                 _selt.$message.success('删除成功');
                             });
                         }
@@ -210,7 +266,7 @@ export default {
             this.DetailEdit = false;
             this.TableRow = row;
             let { ID } = row;
-            this.modalTitle = '编辑巡检点';
+            this.modalTitle = '编辑';
             this.visible = !this.visible;
         },
         operationDelete(row) {
@@ -231,6 +287,8 @@ export default {
             });
         },
         operationHistory(row) {
+            this.detailFooter = false;
+            this.DetailEdit = true;
             this.isForm = false;
             this.TableRow = row;
             this.rowID = row.ID;
@@ -242,29 +300,31 @@ export default {
             this.TableRow = row;
             this.rowID = row.ID;
             this.isForm = true;
-            let htmljson = JSON.parse(row.HtmlJson);
+            this.DetailEdit = false;
+            this.detailFooter = true;
+            let htmljson = JSON.parse(row.FormXml);
             this.tableName = row.TableName;
             this.modalTitle = row.MenuName;
             this.jsonData = htmljson;
             this.visible = !this.visible;
         },
-        showModal() {
-            this.visible = !this.visible;
-            this.modalTitle = '新增巡检点';
-        },
         handleOk() {
-            this.$refs.kfb
+            this.$refs.kfBulid
                 .getData()
                 .then((res) => {
-                    console.log(res);
+                    let { TableName, FormXml } = this.TableRow;
                     this.confirmLoading = true;
                     this.visible = false;
                     this.confirmLoading = false;
-
+                    let data = { TableJson: JSON.stringify(res), TableName: TableName, FormXml, FormXml };
+                    let update = { TableID: this.detailId, TableJson: JSON.stringify(res), TableName: TableName };
+                    console.log(update);
                     if (!this.DetailEdit) {
-                        this.SaveTableDataFn(JSON.stringify(res));
+                        this.SaveTableDataFn(data);
                     } else {
-                        this.UpdateTableDataInfoFn(JSON.stringify(res));
+                        UpdateTableDataInfo(update).then((res) => {
+                            this.$message.success('编辑成功');
+                        });
                     }
                 })
                 .catch((values) => {
@@ -273,47 +333,20 @@ export default {
         },
         handleCancel() {
             this.visible = false;
-            this.$refs.kfb.reset();
+            this.$refs.kfBulid.reset();
         },
         SaveTableDataFn(formJson) {
-            let data = {
-                // tableID: this.rowID,
-                jsonStr: formJson,
-                tableName: this.tableName
-                //jsonModelList: ''
-            };
-            SaveTableData(data).then((res) => {
+            SaveTableData(formJson).then((res) => {
                 this.$message.success('发起成功');
-            });
-        },
-        UpdateTableDataInfoFn(formJson) {
-            let data = {
-                tableID: this.detailId,
-                tableName: this.tableName,
-                jsonStr: formJson
-                //    jsonModelList: ''
-            };
-            UpdateTableDataInfo(data).then((res) => {
-                this.$message.success('编辑成功');
-            });
-        },
-        DeleteTableDataInfoFn(id) {
-            DeleteTableDataInfo(id).then((res) => {
-                this.$message.success('删除成功');
             });
         }
     },
-    created() {},
     mounted() {
         this.GetFormListFn();
-    },
-    beforeCreate() {},
-    beforeMount() {},
-    beforeUpdate() {},
-    updated() {},
-    beforeDestroy() {},
-    destroyed() {},
-    activated() {}
+        this.$refs['kfd'].$on('getTitleVal', (msg) => {
+            this.titleVal = msg;
+        });
+    }
 };
 </script>
 <style lang='less' scoped>

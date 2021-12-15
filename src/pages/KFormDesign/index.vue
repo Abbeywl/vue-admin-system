@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-        <k-form-design toolbarsTop :showHead="true" style="height: 100%" @save="handleSave" ref="title" />
+        <k-form-design toolbarsTop :showHead="true" style="height: 100%" @save="handleSave" ref="kfb" />
     </div>
 </template>
 
@@ -14,10 +14,9 @@ export default {
         return {
             titleVal: '',
             saveData: {
-                id: 0,
-                htmlJson: '',
-                menuName: '',
-                tableName: ''
+                FormXml: '',
+                MenuName: '',
+                TableName: ''
             }
         };
     },
@@ -32,18 +31,15 @@ export default {
             } else if (jsonhtml.list.length == 0) {
                 this.$message.warning('请选择控件');
             } else {
-                this.saveData.htmlJson = values;
-                this.saveData.menuName = this.titleVal;
-                this.saveData.tableName = pinyin.getFullChars(this.titleVal);
+                this.saveData.FormXml = values;
+                this.saveData.MenuName = this.titleVal;
+                this.saveData.TableName = pinyin.getFullChars(this.titleVal);
 
                 SaveFormTableInfo(this.saveData)
                     .then((res) => {
-                        debugger;
                         this.$message.success('保存成功');
                         //清空数据
-                        this.$refs.title.hideResetHint = true;
-                        this.$refs.title.handleReset(true);
-                        this.$emit('handleReset', true);
+                        this.$refs.kfb.handleReset(true);
                     })
                     .catch((err) => {
                         this.$message.success('保存失败');
@@ -62,9 +58,8 @@ export default {
     },
     created() {},
     mounted() {
-        this.$refs['title'].$on('getTitleVal', (msg) => {
+        this.$refs['kfb'].$on('getTitleVal', (msg) => {
             this.titleVal = msg;
-            console.log('msg===', msg);
         });
     },
     beforeCreate() {},

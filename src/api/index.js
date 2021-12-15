@@ -53,15 +53,15 @@ export const GetTableDataList = query => {
 //记录修改
 export const UpdateTableDataInfo = query => {
     return request({
-        url: 'api/userdefinedform/UpdateTableDataInfo',
+        url: 'api/userdefinedform/UpdateTableData',
         method: 'post',
         data: query
     });
 };
 //删除修改
-export const DeleteTableDataInfo = (id) => {
+export const DeleteTableDataInfo = (id,tableName) => {
     return request({
-        url: 'api/userdefinedform/DeleteTableDataInfo?tableID='+id,
+        url: 'api/userdefinedform/DeleteTableDataInfo?tableID='+id+'&tableName='+tableName,
         method: 'delete',
     });
 };

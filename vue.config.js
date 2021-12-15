@@ -11,12 +11,12 @@ module.exports = {
     proxy: { 
       '/api': {
         // target: 'http://47.103.110.240:8218/',
-        target: 'http://192.168.31.14:802/',
+        target: 'http://192.168.1.73:802/',
         secure: false,
         changOrigin: true, 
       },
        '/test': {
-        target: 'http://192.168.31.14:802/',
+        target: 'http://192.168.1.73:802/',
         secure: false,
         changOrigin: true, 
       },

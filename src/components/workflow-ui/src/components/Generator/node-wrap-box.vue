@@ -7,12 +7,6 @@
                         <path :d="icon" />
                     </svg>
                 </span>
-                <!-- <span
-          class="editable-title"
-          data-spm-anchor-id="0.0.0.i53.2f244490UdKR44"
-        >
-          {{ node.name }}
-        </span> -->
                 <input class="editable-title" placeholder="" v-model="node.name" />
 
                 <i aria-label="icon: close" tabindex="-1" class="anticon anticon-close close" @click="delNode">

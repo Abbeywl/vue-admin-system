@@ -95,7 +95,7 @@ export default {
             },
             {
                 type: 'route',
-                label: '条件分支',
+                label: '会签',
                 svgpath:
                     'M568.896 149.333333a64 64 0 0 1 64 64v113.770667a64 64 0 0 1-64 64H544v48.597333h140.501333a96 96 0 0 1 95.893334 91.477334l0.106666 4.522666-0.021333 79.402667H810.666667a64 64 0 0 1 64 64v113.792a64 64 0 0 1-64 64h-113.770667a64 64 0 0 1-64-64v-113.792a64 64 0 0 1 64-64h19.584l0.021333-79.125333-0.149333-3.349334a32 32 0 0 0-31.850667-28.928l-348.864 0.021334c-17.664 0.746667-31.36 15.68-30.592 34.688l-0.021333 76.693333h22.08a64 64 0 0 1 64 64v113.792a64 64 0 0 1-64 64H213.333333a64 64 0 0 1-64-64v-113.792a64 64 0 0 1 64-64h27.690667l0.042667-75.349333a96 96 0 0 1 87.36-99.669334l4.501333-0.298666a96 96 0 0 1 4.053333-0.085334H480v-48.597333h-24.896a64 64 0 0 1-64-64V213.333333a64 64 0 0 1 64-64h113.792zM327.104 679.104H213.333333v113.792h113.770667v-113.792z m483.562667 0h-113.770667v113.792H810.666667v-113.792zM568.896 213.333333h-113.792v113.770667h113.792V213.333333z'
             },
@@ -113,7 +113,7 @@ export default {
             // },
             {
                 type: 'shunt',
-                label: '分流',
+                label: '或签',
                 svgpath:
                     'M128.692 320.223v383.66h319.395v-383.66H128.692z m255.426 319.659h-192.08V383.79h192.08v256.092zM575.119 320.223v383.66h319.395v-383.66H575.119z m255.426 319.659h-192.08V383.79h192.08v256.092zM481.078 62.263h63.844v895.69h-63.844z'
             }
@@ -147,7 +147,8 @@ export default {
                     this.addRecall(item);
                     break;
                 case 'shunt':
-                    this.addShunt(item);
+                    // this.addShunt(item);
+                    this.addRouteShunt(item);
                     break;
                 default:
                     this.$Message.error('暂时不支持');
@@ -162,6 +163,7 @@ export default {
                 prevId: this.node.nodeId,
                 nodeId: '' + new Date().getTime(),
                 type: 'approver',
+                status: '',
                 properties: {
                     type: 'approver',
                     name: '请选择审批人',
@@ -190,6 +192,7 @@ export default {
                 prevId: this.node.nodeId,
                 nodeId: '' + new Date().getTime(),
                 type: 'back',
+                status: '',
                 properties: {
                     type: 'back',
                     name: '退回'
@@ -207,6 +210,7 @@ export default {
                 prevId: this.node.nodeId,
                 nodeId: '' + new Date().getTime(),
                 type: 'recall',
+                status: '',
                 properties: {
                     type: 'recall',
                     name: '撤回'
@@ -222,6 +226,7 @@ export default {
                 prevId: this.node.nodeId,
                 nodeId: '' + new Date().getTime(),
                 type: 'notifier',
+                status: '',
                 properties: {
                     type: 'notifier',
                     name: '请选择抄送人',
@@ -244,17 +249,19 @@ export default {
             var nodeId = new Date().getTime();
             var node = {
                 type: 'route',
+                status: '',
+                approval: 'countersign',
                 prevId: this.node.nodeId,
                 nodeId: '' + nodeId,
                 conditionNodes: [
                     {
-                        name: '条件1',
+                        name: '审核',
                         type: 'condition',
                         prevId: '' + nodeId,
                         nodeId: '' + (nodeId + 10)
                     },
                     {
-                        name: '条件2',
+                        name: '审核',
                         type: 'condition',
                         prevId: '' + (nodeId + 10),
                         nodeId: '' + (nodeId + 20)
@@ -263,22 +270,24 @@ export default {
             };
             this.$emit('addnode', node);
         },
-        addShunt(item) {
+        addRouteShunt(item) {
             var nodeId = new Date().getTime();
             var node = {
-                type: 'shunt',
+                type: 'route',
+                status: '',
+                approval: 'orsign',
                 prevId: this.node.nodeId,
                 nodeId: '' + nodeId,
                 conditionNodes: [
                     {
-                        name: '审批人',
-                        type: 'conditionShunt',
+                        name: '审核',
+                        type: 'condition',
                         prevId: '' + nodeId,
                         nodeId: '' + (nodeId + 10)
                     },
                     {
-                        name: '审批人',
-                        type: 'conditionShunt',
+                        name: '审核',
+                        type: 'condition',
                         prevId: '' + (nodeId + 10),
                         nodeId: '' + (nodeId + 20)
                     }
@@ -286,6 +295,30 @@ export default {
             };
             this.$emit('addnode', node);
         }
+        // addShunt(item) {
+        //     var nodeId = new Date().getTime();
+        //     var node = {
+        //         type: 'shunt',
+        //         prevId: this.node.nodeId,
+        //         nodeId: '' + nodeId,
+        //         approval: 'shunt',
+        //         conditionNodes: [
+        //             {
+        //                 name: '审批人',
+        //                 type: 'conditionShunt',
+        //                 prevId: '' + nodeId,
+        //                 nodeId: '' + (nodeId + 10)
+        //             },
+        //             {
+        //                 name: '审批人',
+        //                 type: 'conditionShunt',
+        //                 prevId: '' + (nodeId + 10),
+        //                 nodeId: '' + (nodeId + 20)
+        //             }
+        //         ]
+        //     };
+        //     this.$emit('addnode', node);
+        // }
     }
 };
 </script>

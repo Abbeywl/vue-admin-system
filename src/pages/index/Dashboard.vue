@@ -152,7 +152,6 @@ export default {
     methods: {
         getDataTest() {
             var data = {
-                id: 0,
                 htmlJson: 'ssss',
                 menuName: '测试表单添加',
                 tableName: 'testFormAdd',

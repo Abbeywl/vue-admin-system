@@ -6,7 +6,7 @@
  * @LastEditTime: 2020-03-26 20:18:56
  -->
 <template>
-    <header class="header"><a-input placeholder="请输入表单名称" v-model="title" @change="titleChange" /></header>
+    <header class="header"><a-input placeholder="请输入表单名称" v-model="title" @change="titleChange(false)" /></header>
 </template>
 <script>
 export default {
@@ -22,7 +22,9 @@ export default {
         };
     },
     methods: {
-        titleChange() {
+        titleChange(isDel) {
+            if (isDel) this.title = '';
+            this.title = this.title.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\w]/g, '').trim();
             this.$emit('getTitle', this.title);
         }
     }

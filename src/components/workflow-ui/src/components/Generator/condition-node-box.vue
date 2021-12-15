@@ -22,9 +22,9 @@
             </div>
         </div>
         <AddNodeBtn :node="node" @addnode="addnode" />
-        <AddNodeCondition :show.sync="show" :properties="node.properties" :parentNode="node" @on-success="setPropertiesOK" />
+        <!-- <AddNodeCondition :show.sync="show" :properties="node.properties" :parentNode="node" @on-success="setPropertiesOK" /> -->
         <AddNodeApprover
-            v-if="node.type != 'back' && node.type != 'recall' && node.type != 'condition'"
+            v-if="node.type != 'back' && node.type != 'recall'"
             :dialog.sync="show"
             :properties="node.properties"
             :node="node"
@@ -97,7 +97,8 @@ export default {
             this.$emit('addConditionFactor', this.node);
         },
         getText() {
-            var str = this.node.type === 'condition' ? '请设置条件' : '请设置审批人';
+            // var str = this.node.type === 'condition' ? '请设置条件' : '请设置审批人';
+            var str = '请设置审批人';
             this.textName.push(str);
             this.textName = Array.from(new Set(this.textName));
             if (this.node.properties.otherInfor) {

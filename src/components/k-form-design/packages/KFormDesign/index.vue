@@ -170,10 +170,7 @@ export default {
             type: Boolean,
             default: true
         },
-        hideResetHint: {
-            type: Boolean,
-            default: false
-        },
+
         toolbarsTop: {
             type: Boolean,
             default: false
@@ -366,14 +363,13 @@ export default {
             this.$refs.previewModal.previewWidth = this.previewOptions.width;
             this.$refs.previewModal.visible = true;
         },
-        handleReset() {
+        handleReset(isTrue) {
             // 清空
-            if (this.hideResetHint) {
-                // 不显示提示直接清空
+            if (isTrue) {
                 this.resetData();
+                this.$refs.header.titleChange(true);
                 return;
             }
-
             this.$confirm({
                 title: '警告',
                 content: '是否确认清空内容?',
@@ -399,7 +395,6 @@ export default {
                 }
             };
             this.handleSetSelectItem({ key: '' });
-            this.$message.success('已清空');
         },
         handleSetSelectItem(record) {
             // 操作间隔不能低于100毫秒
