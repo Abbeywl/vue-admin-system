@@ -2,7 +2,7 @@
     <div class="" style="height: 100">
         <a-row>
             <a-col :span="18" class="btn_group">
-                <a-button @click="isAdd = !isAdd" type="primary"> {{ !isAdd ? '新增' : '返回' }} </a-button>
+                <a-button @click="AddFn" type="primary"> {{ !isAdd ? '新增' : '返回' }} </a-button>
                 <!-- <a-button @click="handleAdd" type=""> 导入EXCEL </a-button>
                 <a-button @click="handleAdd" type=""> 下载模板 </a-button> -->
             </a-col>
@@ -149,6 +149,11 @@ export default {
     computed: {},
     watch: {},
     methods: {
+        AddFn() {
+            if (!this.isAdd) this.GetFormListFn();
+
+            this.isAdd = !this.isAdd;
+        },
         handleSave(values) {
             let jsonhtml = JSON.parse(values);
 
