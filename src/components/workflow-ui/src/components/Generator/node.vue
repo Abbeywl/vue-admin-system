@@ -46,7 +46,7 @@ export default {
         }
     },
     mounted() {
-        console.log('node 新节点:', this.node);
+        // console.log('node 新节点:', this.node);
     },
     methods: {
         addnode(node) {
@@ -61,7 +61,7 @@ export default {
         addConditionFactor(node) {
             this.$emit('addConditionFactor', node);
             this.node = node;
-            // console.log(this.node)
+            // console.log(this.node)  
         }
     }
 };

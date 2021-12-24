@@ -120,3 +120,36 @@ export const QueryProcessXml = id => {
 }
 // 工作流相关api  end
 
+// 工作流发起
+export const SaveFlowFormRelationInfo = query => {
+     return request({
+        url: 'api/userdefinedflow/SaveFlowFormRelationInfo',
+        method: 'post',
+        data: query
+    });
+}
+export const GetFlowFormRelationList = query => {
+    return request({
+        url: 'api/userdefinedflow/GetFlowFormRelationList',
+        method: 'post',
+        data: query
+     })
+}
+//发起流程
+export const SaveProcessFlow = query => {
+    return request({
+        url: 'api/userdefinedflow/SaveProcessFlow',
+        method: 'post',
+        data: query
+     })
+}
+// 获取发起记录
+export const GetProcessFlowDataList = query => {
+     return request({
+        url: 'api/userdefinedflow/GetProcessFlowDataList?',
+        method: 'post',
+        data: query
+     })
+}
+ 
+ 

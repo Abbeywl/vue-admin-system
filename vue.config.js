@@ -8,17 +8,17 @@ module.exports = {
     //   "Access-Control-Allow-Origin": "*",
     //   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
     // },
-    proxy: { 
+    proxy: {
       '/api': {
         // target: 'http://47.103.110.240:8218/',
-        target: 'http://192.168.1.73:802/',
+        target: 'http://192.168.1.78:802/',
         secure: false,
-        changOrigin: true, 
+        changOrigin: true,
       },
-       '/test': {
+      '/test': {
         target: 'http://192.168.1.73:802/',
         secure: false,
-        changOrigin: true, 
+        changOrigin: true,
       },
     }
   },

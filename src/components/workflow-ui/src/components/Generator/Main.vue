@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="fd-nav">
+        <div class="fd-nav" v-if="titleIsShow">
             <div class="fd-nav-left">
                 <div class="fd-nav-back" @click="colse">
                     <i aria-label="icon: left" class="anticon anticon-left"
@@ -94,6 +94,10 @@ export default {
         title: {
             type: String,
             default: '工作流'
+        },
+        titleIsShow: {
+            type: Boolean,
+            default: true
         }
     },
     data: () => ({
@@ -134,8 +138,6 @@ export default {
     watch: {
         data: {
             handler(val, newval) {
-                console.log(JSON.stringify(val));
-                console.log(JSON.stringify(newval));
                 if (!val.node) {
                     val.node = defaultData;
                 }
@@ -179,7 +181,10 @@ export default {
         },
         delNode(node) {
             // wanglan  console.log("删除节点:" + node.properties.actionerRules[0].labelNames);
-            console.log('删除节点:');
+            if (!titleIsShow) {
+                this.$message.warning('只能删除不可查看！');
+                return false;
+            }
             delNode(node, this.data1.node, this.items);
             this.key++;
             // this.iteratorData(this.data1.node)

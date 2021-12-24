@@ -42,12 +42,22 @@ export default new Router({
                 {
                     path: '/workflow',
                     component: () => import('../pages/workflow'),
-                    meta: { title: '工作流' }
+                    meta: { title: '工作流模板绘制' }
                 },
                 {
                     path: '/processInfo',
                     component: () => import('../pages/workflow/processInfo.vue'),
-                    meta: { title: '工作流表格' }
+                    meta: { title: '模板列表' }
+                },
+                  {
+                    path: '/launched',
+                    component: () => import('../pages/workflow/launched.vue'),
+                    meta: { title: '已发起' }
+                },
+                 {
+                    path: '/senddetail',
+                    component: () => import('../pages/workflow/senddetail.vue'),
+                    meta: { title: '已发起记录' }
                 }
             ]
         },

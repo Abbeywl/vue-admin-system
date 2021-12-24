@@ -22,7 +22,9 @@
                     <a-divider type="vertical" v-show="!record.XmlContent" />
                     <a class="" @click="operationCreateOrRead(record, false)" v-show="record.XmlContent">查看流程</a>
                     <a-divider type="vertical" v-show="record.XmlContent" />
-                    <a class="" @click="operationHistory(record)">历史记录</a>
+                    <a class="" @click="operationSend(record)">发起</a>
+                    <!-- <a-divider type="vertical" v-show="record.XmlContent" />
+                    <a class="" @click="operationHistory(record)">历史记录</a> -->
                 </template>
                 <template slot="status" slot-scope="record" class="oprea">
                     <a-tag :color="record == 'InUse' ? 'cyan' : ''"> {{ record == 'InUse' ? '使用中' : '草稿' }} </a-tag>
@@ -30,7 +32,7 @@
             </a-table>
         </a-row>
         <a-modal
-            :title="modalTitle"
+            :title="type == 'add' ? '添加' : type == 'edit' ? '编辑' : '发起'"
             :visible="visible"
             :confirm-loading="confirmLoading"
             @ok="handleOk"
@@ -38,7 +40,7 @@
             ok-text="保存"
             cancel-text="取消"
         >
-            <k-form-build :value="jsonData" ref="kfb" v-show="isForm" />
+            <k-form-build :value="jsonData" ref="kfb" v-show="isForm" :dynamicData="dynamicData" />
         </a-modal>
         <div v-show="isShow">
             <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
@@ -50,7 +52,17 @@
 import workflow from '../../components/workflow-ui/src/components/Generator/Main.vue';
 import '../../components/workflow-ui/src/assets/style.css';
 import formJson from './form.json';
-import { GetProcessList, QueryProcessXml, CreateProcessInfo, SaveProcessXml, UpdateProcessInfo, DeleteProcessInfo } from '@/api/index.js';
+import sendform from './sendform.json';
+import {
+    GetProcessList,
+    QueryProcessXml,
+    CreateProcessInfo,
+    SaveProcessXml,
+    UpdateProcessInfo,
+    DeleteProcessInfo,
+    GetFormList,
+    SaveFlowFormRelationInfo
+} from '@/api/index.js';
 const data = [];
 var columns = [
     {
@@ -96,16 +108,17 @@ export default {
             confirmLoading: false,
             labelCol: { span: 6 },
             wrapperCol: { span: 18 },
-            modalTitle: '新增',
             tableParams: {
-                ProcessStatus: 'InUse',
-                IsDelete: false
+                IsPaging: true,
+                PageIndex: 0,
+                PageSize: 20
             },
             TableRow: {},
-            isEdit: false,
             isShow: false,
             flowData: {},
-            ProcessTitle: ''
+            ProcessTitle: '',
+            dynamicData: { formData: [] },
+            type: ''
         };
     },
     computed: {},
@@ -122,14 +135,27 @@ export default {
             console.log(1);
         },
         operationEdit(row) {
+            this.type = 'edit';
+            this.jsonData = formJson;
             this.TableRow = row;
-            this.isEdit = true;
             let { ID, ProcessName, ProcessStatus, Description } = row;
             let obj = { processName: ProcessName, processStatus: ProcessStatus, description: Description };
-            this.modalTitle = '编辑';
             this.$nextTick(function () {
                 this.$refs.kfb.form.setFieldsValue(obj);
             });
+
+            this.visible = !this.visible;
+        },
+        //工作流 发送
+        operationSend(row) {
+            this.type = 'send';
+            this.jsonData = sendform;
+            this.TableRow = row;
+            let { ID, ProcessName, ProcessStatus, Description } = row;
+            // let obj = { processName: ProcessName, processStatus: ProcessStatus, description: Description };
+            // this.$nextTick(function () {
+            //     this.$refs.kfb.form.setFieldsValue(obj);
+            // });
 
             this.visible = !this.visible;
         },
@@ -150,12 +176,12 @@ export default {
                 }
             });
         },
-        operationHistory(row) {
-            this.isForm = false;
-            this.TableRow = row;
-            this.visible = !this.visible;
-            this.GetTableDataListFn(row.TableName);
-        },
+        // operationHistory(row) {
+        //     this.isForm = false;
+        //     this.TableRow = row;
+        //     this.visible = !this.visible;
+        //     this.GetTableDataListFn(row.TableName);
+        // },
         //表单发起点击
         operationCreateOrRead(row, isRead) {
             this.TableRow = row;
@@ -167,7 +193,7 @@ export default {
                 QueryProcessXml(ID).then((res) => {
                     if (res.XmlContent) {
                         this.$nextTick(function () {
-                            this.flowData = JSON.parse(res.XmlContent);
+                            this.flowData.node = JSON.parse(res.XmlContent);
                         });
                         this.isShow = true;
                         return;
@@ -181,23 +207,37 @@ export default {
             this.isShow = true;
         },
         showModal() {
+            this.type = 'add';
+            this.jsonData = formJson;
             this.visible = !this.visible;
-            this.modalTitle = '新增';
         },
         handleOk() {
             this.$refs.kfb
                 .getData()
                 .then((res) => {
-                    console.log(res);
                     this.confirmLoading = true;
                     this.visible = false;
                     this.confirmLoading = false;
                     let { ID } = this.TableRow;
-                    if (!this.isEdit) {
-                        this.SaveTableDataFn(res);
-                    } else {
-                        res.ID = ID;
-                        this.UpdateTableDataInfoFn(res);
+                    switch (this.type) {
+                        case 'add':
+                            this.SaveTableDataFn(res);
+                            break;
+                        case 'edit':
+                            res.ID = ID;
+                            this.UpdateTableDataInfoFn(res);
+                            break;
+                        default:
+                            res.ProcessID = ID;
+                            SaveFlowFormRelationInfo(res)
+                                .then((res) => {
+                                    this.$message.success('发起成功');
+                                    this.GetFormListFn();
+                                })
+                                .catch((err) => {
+                                    this.$$message.warning('err');
+                                });
+                            break;
                     }
                 })
                 .catch((values) => {
@@ -223,7 +263,7 @@ export default {
         //工作流保存
         flowSave(data) {
             console.log(JSON.stringify(data));
-            let xmlContent = JSON.stringify(data);
+            let xmlContent = JSON.stringify(data.node);
             let { ID } = this.TableRow;
             let formdata = { ID: ID, xmlContent: xmlContent };
 
@@ -245,6 +285,23 @@ export default {
     created() {},
     mounted() {
         this.GetFormListFn();
+        let tabledata = {
+            IsPaging: true,
+            PageIndex: 0,
+            PageSize: 999
+        };
+        //获取表单数据
+        GetFormList(tabledata).then((res) => {
+            let formArr = [];
+            for (let item of res.rows) {
+                let obj = {
+                    label: item.MenuName,
+                    value: item.ID
+                };
+                formArr.push(obj);
+            }
+            this.dynamicData.formData = formArr;
+        });
     },
     beforeCreate() {},
     beforeMount() {},

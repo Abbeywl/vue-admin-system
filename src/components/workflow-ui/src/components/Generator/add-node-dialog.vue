@@ -250,7 +250,7 @@ export default {
             var node = {
                 type: 'route',
                 status: '',
-                approval: 'countersign',
+                approval: 'joinsign',
                 prevId: this.node.nodeId,
                 nodeId: '' + nodeId,
                 conditionNodes: [

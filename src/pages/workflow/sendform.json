@@ -2,7 +2,7 @@
 	"list": [
 		{
 			"type": "input",
-			"label": "工作流名称",
+			"label": "业务名称",
 			"icon": "icon-write",
 			"options": {
 				"type": "text",
@@ -16,7 +16,7 @@
 				"hidden": false,
 				"disabled": false
 			},
-			"model": "processName",
+			"model": "Name",
 			"key": "input_1638781625900",
 			"help": "",
 			"rules": [
@@ -27,26 +27,35 @@
 			]
 		},
 		{
-			"type": "textarea",
-			"label": "描述",
-			"icon": "icon-edit",
+			"type": "select",
+			"label": "表单",
 			"options": {
 				"width": "100%",
-				"minRows": 4,
-				"maxRows": 6,
-				"maxLength": null,
-				"defaultValue": "",
+				"multiple": false,
+				"disabled": false,
 				"clearable": false,
 				"hidden": false,
-				"disabled": false,
-				"placeholder": "请输入"
+				"placeholder": "请选择",
+				"dynamicKey": "formData",
+				"dynamic": true,
+				"options": [
+					{
+						"value": "1",
+						"label": "下拉框1"
+					},
+					{
+						"value": "2",
+						"label": "下拉框2"
+					}
+				],
+				"showSearch": false
 			},
-			"model": "description",
-			"key": "textarea_1638781662705",
+			"model": "FormTableRelationID",
+			"key": "select_1640249220299",
 			"help": "",
 			"rules": [
 				{
-					"required": false,
+					"required": true,
 					"message": "必填项"
 				}
 			]

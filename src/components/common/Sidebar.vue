@@ -56,7 +56,9 @@ export default {
                     icon: 'setting',
                     children: [
                         { name: '工作流表格', path: '/processInfo', icon: 'setting', key: '3.1' },
-                        { name: '创建工作流', path: '/workflow', icon: 'setting', key: '3.2' }
+                        { name: '创建工作流', path: '/workflow', icon: 'setting', key: '3.2' },
+                        { name: '已发起', path: '/launched', icon: 'setting', key: '3.3' },
+                        { name: '已发起记录', path: '/senddetail', icon: 'setting', key: '3.4' }
                     ]
                 }
             ]

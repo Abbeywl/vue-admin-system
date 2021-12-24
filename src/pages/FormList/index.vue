@@ -75,7 +75,6 @@ import {
 } from '@/api/index.js';
 const pinyin = require('js-pinyin');
 
-const data = [];
 var columns = [
     {
         title: '表单名称',
@@ -102,21 +101,14 @@ const historyColumns = [
         scopedSlots: { customRender: 'action' }
     }
 ];
-for (let i = 0; i < 100; i++) {
-    data.push({
-        key: i,
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `文字${i}`
-    });
-}
+
 export default {
     components: {},
     data() {
         return {
             isAdd: false,
             jsonData: {},
-            data,
+            data: [],
             columns,
             historyColumns,
             detailFooter: false,

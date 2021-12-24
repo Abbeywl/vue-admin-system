@@ -110,7 +110,7 @@
                                         </a-row>
                                     </a-checkbox-group>
                                 </div>
-                                <div>
+                                <div v-show="node.type != 'condition'">
                                     <h2 class="t_left">审批方式</h2>
                                     <a-row>
                                         <a-radio-group v-model="approval" @change="approvalOnChange">
@@ -209,7 +209,7 @@ export default {
         },
         properties: {
             handler(val) {
-                console.log('=====ff===============', val);
+                // console.log('=====ff===============', val);
             },
             deep: true
         }
