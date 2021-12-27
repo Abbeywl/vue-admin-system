@@ -12,22 +12,18 @@
         <a-row v-show="!isShow">
             <a-table :columns="columns" :data-source="data" rowKey="ID">
                 <template slot="action" slot-scope="record" class="oprea">
-                    <!-- <a class="" @click="operationEdit(record)">添加到菜单</a>
-                    <a-divider type="vertical" /> -->
                     <a class="" @click="operationDelete(record)">删除</a>
                     <a-divider type="vertical" />
-                    <!-- <a class="" @click="operationCreateOrRead(record, true)" v-show="!record.XmlContent">创建流程</a>
-                    <a-divider type="vertical" v-show="!record.XmlContent" />
-                    <a class="" @click="operationCreateOrRead(record, false)" v-show="record.XmlContent">查看流程</a>
-                    <a-divider type="vertical" v-show="record.XmlContent" /> -->
-                    <a class="" @click="operationSend(record)">发起流程</a>
+                    <a class="" @click="operationSendOrRead('read', record)">查看流程</a>
+                    <a-divider type="vertical" />
+                    <a class="" @click="operationSendOrRead('send', record)">发起流程</a>
                     <a-divider type="vertical" />
                     <a class="" @click="operationHistory(record)">发起记录</a>
                 </template>
             </a-table>
         </a-row>
         <a-modal
-            :title="type == 'add' ? '添加' : type == 'edit' ? '编辑' : type == 'history' ? '发起记录' : '发起'"
+            :title="type == 'add' ? '添加' : type == 'edit' ? '编辑' : type == 'history' ? '发起记录' : '发起流程'"
             :visible="visible"
             :confirm-loading="confirmLoading"
             @cancel="handleCancel"
@@ -36,12 +32,17 @@
         >
             <template slot="footer">
                 <a-button key="back" @click="handleCancel"> 取消 </a-button>
-                <a-button type="primary" :loading="confirmLoading" @click="nextStep"> 查看流程 </a-button>
+                <!-- <a-button type="primary" :loading="confirmLoading" @click="nextStep"> 查看流程 </a-button> -->
+                <a-button type="primary" v-show="type == 'historyEdit'" :loading="confirmLoading" @click="operationBtn('approve')">
+                    审批
+                </a-button>
+                <a-button type="primary" v-show="type == 'historyEdit'" :loading="confirmLoading" @click="operationBtn('return')">
+                    回退
+                </a-button>
                 <a-button key="submit" type="primary" :loading="confirmLoading" @click="handleOk"> 保存 </a-button>
             </template>
             <k-form-build :value="jsonData" ref="kfb" v-show="visible && type != 'history'" :dynamicData="dynamicData" />
-            <!-- <a-row v-show="visible && type != 'add'"> 提示：发起流程之后，修改流程模板不影响当前发起流程。 </a-row> -->
-            <div v-show="isflowShow" style="position: relative; height: 60vh" class="sss">
+            <div v-show="isflowShow" style="position: relative; height: 60vh">
                 <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" :titleIsShow="false" />
             </div>
             <a-table
@@ -58,12 +59,11 @@
                     <a class="" @click="operation('edit', record)">编辑</a>
                     <a-divider type="vertical" />
                     <a class="" @click="operation('delete', record)">删除</a>
-                    <a-divider type="vertical" />
-                    <a class="" @click="operation('approve', record)">审批</a>
-                    <a-divider type="vertical" />
-                    <a class="" @click="operation('return', record)">撤回</a>
-                    <a-divider type="vertical" />
-                    <a class="" @click="operation('read', record)">查看流程</a>
+                </template>
+                <template slot="FlowStatusStr" slot-scope="record">
+                    <a-tag :color="record.FlowStatus == 'Pending' ? 'green' : record.FlowStatus == 'Finished' ? 'blue' : 'red'">
+                        {{ record.FlowStatus == 'Pending' ? '审批中' : record.FlowStatus == 'Finished' ? '审批完成' : '回退' }}
+                    </a-tag>
                 </template>
             </a-table>
         </a-modal>
@@ -85,7 +85,8 @@ import {
     UpdateProcessInfo,
     DeleteProcessInfo,
     SaveProcessFlow,
-    GetProcessFlowDataList
+    GetProcessFlowDataList,
+    ApproveOperation
 } from '@/api/index.js';
 var columns = [
     {
@@ -145,7 +146,8 @@ export default {
             dynamicData: { formData: [] },
             // 发起记录
             historyColumns: [],
-            historyData: []
+            historyData: [],
+            operationRow: {}
         };
     },
     computed: {},
@@ -155,22 +157,35 @@ export default {
             GetFlowFormRelationList(this.tableParams)
                 .then((res) => {
                     this.data = res;
-                    console.log(res);
                 })
                 .catch((err) => {
                     console.log(err);
                 });
         },
         onSearch() {},
-
-        operationSend(row) {
-            this.type = 'send';
+        operationSendOrRead(type, row) {
             this.TableRow = row;
             let { FormXml, XmlContent } = row;
-            this.visible = !this.visible;
             this.jsonData = JSON.parse(FormXml);
-            this.flowData = JSON.parse(XmlContent);
-            console.log(1);
+            let XmlContentJson = JSON.parse(XmlContent);
+            this.flowData = {};
+            this.$nextTick(() => {
+                this.flowData = { node: XmlContentJson };
+            });
+            this.modalwidth = '80vw';
+            switch (type) {
+                case 'send':
+                    this.type = 'send';
+
+                    this.visible = !this.visible;
+
+                    this.isflowShow = true;
+                    break;
+                default:
+                    this.visible = false;
+                    this.isShow = true;
+                    break;
+            }
         },
         operationEdit(row) {
             this.type = 'edit';
@@ -205,7 +220,7 @@ export default {
             this.TableRow = row;
             let { ID, TableName } = row;
             this.visible = !this.visible;
-
+            this.isflowShow = false;
             let obj = {
                 TableName: TableName,
                 RelationID: ID,
@@ -215,39 +230,12 @@ export default {
             };
             this.GetTableDataListFn(row, obj);
         },
-        //表单发起点击
-        // operationCreateOrRead(row, isRead) {
-        //     this.TableRow = row;
-        //     let ProcessName = row.ProcessName;
-        //     this.ProcessTitle = ProcessName;
-        //     let { ID } = row;
-        //     this.flowData = {};
-        //     if (!isRead) {
-        //         QueryProcessXml(ID).then((res) => {
-        //             if (res.XmlContent) {
-        //                 this.$nextTick(function () {
-        //                     this.flowData = JSON.parse(res.XmlContent);
-        //                 });
-        //                 this.isShow = true;
-        //                 return;
-        //             }
-        //         });
-        //     }
-        //     this.flowData = {
-        //         //   title: ProcessName,
-        //         node: defaultData
-        //     };
-        //     this.isShow = true;
-        // },
+
         showModal() {
             this.type = 'add';
             this.visible = !this.visible;
         },
-        nextStep() {
-            this.type = 'send';
-            this.modalwidth = '80vw';
-            this.isflowShow = !this.isflowShow;
-        },
+
         handleOk() {
             this.$refs.kfb
                 .getData()
@@ -329,8 +317,8 @@ export default {
         },
         GetTableDataListFn(row, tableName) {
             let { TableJson } = row;
+
             GetProcessFlowDataList(tableName).then((res) => {
-                console.log(res);
                 let columnsArr = [];
 
                 let column = JSON.parse(TableJson);
@@ -344,23 +332,86 @@ export default {
                 let opera = {
                     title: '操作',
                     key: 'operation',
-
                     scopedSlots: { customRender: 'detailAction' }
                 };
+                let status = {
+                    title: '状态',
+                    key: 'FlowStatus',
+                    scopedSlots: { customRender: 'FlowStatusStr' }
+                };
+                columnsArr.push(status);
                 columnsArr.push(opera);
                 this.historyColumns = columnsArr;
                 this.historyData = res;
             });
         },
         operation(type, row) {
+            this.operationRow = row;
+            let { ID, FlowID, ProcessXml } = row;
+            let operationType = type == 'return' ? 'FallBack' : type == 'approve' ? 'Pass' : '';
+            let obj = {
+                flowID: FlowID,
+                operationType: operationType
+            };
             switch (type) {
                 case 'edit':
+                    // return;
+                    // this.TableRow = row;
+                    let { FormXml, XmlContent, TableJson } = this.TableRow;
+                    console.log(JSON.parse(TableJson));
+                    console.log(row);
+                    this.type = 'historyEdit';
+                    this.modalwidth = '80vw';
+                    this.visible = true;
+                    this.isflowShow = true;
+                    this.jsonData = JSON.parse(FormXml);
+                    let XmlContentJson = JSON.parse(XmlContent);
+                    this.flowData = {};
+                    let Copy = JSON.stringify(row);
+                    Copy = JSON.parse(Copy);
+                    this.$delete(Copy, 'ID');
+                    this.$delete(Copy, 'FlowFormRelationID');
+                    this.$delete(Copy, 'FlowID');
+                    this.$delete(Copy, 'ProcessXml');
+                    this.$delete(Copy, 'RefTable');
+                    this.$delete(Copy, 'RefTableID');
+                    this.$delete(Copy, 'row_number');
+                    this.$nextTick(() => {
+                        //  this.$refs.kfb.setData=
+                        this.$refs.kfb.form.setFieldsValue(Copy);
+                        this.flowData = { node: XmlContentJson };
+                    });
                     break;
                 case 'delete':
                     break;
+                default:
+                    this.visible = false;
+                    let ProcessXmlJson = JSON.parse(ProcessXml);
+                    this.flowData = { node: ProcessXmlJson };
+                    console.log(this.flowData);
+                    this.isShow = true;
+                    break;
+            }
+        },
+        operationBtn(type, row) {
+            let { FlowID } = this.operationRow;
+            let operationType = type == 'return' ? 'FallBack' : type == 'approve' ? 'Pass' : '';
+            let obj = {
+                flowID: FlowID,
+                operationType: operationType
+            };
+            this.isflowShow = !this.isflowShow;
+            this.type = 'history';
+            switch (type) {
                 case 'approve':
+                    ApproveOperation(obj).then((res) => {
+                        this.$message.success('审批成功');
+                    });
                     break;
                 case 'return':
+                    ApproveOperation(obj).then((res) => {
+                        this.$message.success('回退成功');
+                    });
                     break;
                 default:
                     break;
@@ -373,6 +424,5 @@ export default {
     }
 };
 </script>
-<style lang='less' scoped>
-//@import url(); 引入公共css类
+
 </style>

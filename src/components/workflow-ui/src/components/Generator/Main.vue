@@ -28,7 +28,7 @@
             </div>
             <div class="fd-nav-right">
                 <button type="button" class="ant-btn button-preview" @click="preview">
-                    <span>保 存</span>
+                    <span>预览JSON</span>
                 </button>
                 <button type="button" class="ant-btn button-preview" @click="save">
                     <span>发 布</span>
@@ -51,11 +51,17 @@
                     >
                         <Node v-for="(item, index) in items" :key="index" :node="item" @addnode="addnode" @delNode="delNode(item)" />
                         <EndNode />
-                        <AModal :dialog.sync="viewModal">
+                        <a-modal title="预览" :visible="viewModal" @cancel="handleCancel">
+                            <pre>{{ JSON.stringify(data1.node, null, 4) }}</pre>
+                            <template slot="footer">
+                                <a-button key="back" @click="handleCancel"> 取消 </a-button>
+                            </template>
+                        </a-modal>
+                        <!-- <AModal :dialog.sync="viewModal">
                             <pre style="font-family: Monaco, Menlo, Consolas, Bitstream Vera Sans Mono, monospace; font-size: 14px">{{
                                 JSON.stringify(data1.node, null, 4)
                             }}</pre>
-                        </AModal>
+                        </AModal> -->
                         <ErrorsModal :dialog.sync="errorsModal" :data="errors" />
                     </div>
                 </div>
@@ -64,7 +70,7 @@
     </div>
 </template>
 <script>
-import AModal from './../AModal/AModal';
+// import AModal from './../AModal/AModal';
 import EndNode from './end-node';
 import ErrorsModal from './errors-modal';
 import { iteratorData, addNewNode, delNode, checkData } from './process';
@@ -83,7 +89,7 @@ export default {
     name: 'WorkflowUi',
     components: {
         EndNode,
-        AModal,
+        // AModal,
         ErrorsModal
     },
     props: {
@@ -181,7 +187,7 @@ export default {
         },
         delNode(node) {
             // wanglan  console.log("删除节点:" + node.properties.actionerRules[0].labelNames);
-            if (!titleIsShow) {
+            if (!this.titleIsShow) {
                 this.$message.warning('只能删除不可查看！');
                 return false;
             }
@@ -221,6 +227,10 @@ export default {
         },
         colse() {
             this.$parent.closeFn();
+        },
+        handleCancel() {
+            this.viewModal = false;
+            this.$emit('close');
         }
     }
 };

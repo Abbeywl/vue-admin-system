@@ -8,13 +8,21 @@
                     </svg>
                 </span>
                 <input class="editable-title" placeholder="" v-model="node.name" />
+                <a-icon type="check-circle" theme="twoTone" class="currentStatus" two-tone-color="#52c41a" v-show="node.type == 'start'" />
 
-                <i aria-label="icon: close" tabindex="-1" class="anticon anticon-close close" @click="delNode">
-                    <svg viewBox="64 64 896 896" focusable="false" class="" data-icon="close" width="1em" height="1em" fill="currentColor">
+                <i
+                    aria-label="icon: close"
+                    tabindex="-1"
+                    class="anticon anticon-close close"
+                    @click="delNode"
+                    v-show="node.type != 'start'"
+                >
+                    <a-icon type="close" />
+                    <!-- <svg viewBox="64 64 896 896" focusable="false" class="" data-icon="close" width="1em" height="1em" fill="currentColor">
                         <path
                             d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"
                         />
-                    </svg>
+                    </svg> -->
                 </i>
             </div>
             <div v-if="node.type === 'back'">退回</div>
@@ -131,5 +139,13 @@ export default {
 }
 .right {
     float: right;
+}
+.currentStatus {
+    /* box-shadow: 0px 0px 10px 5px #aaa; */
+    font-size: 22px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
 }
 </style>

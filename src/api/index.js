@@ -152,4 +152,10 @@ export const GetProcessFlowDataList = query => {
      })
 }
  
- 
+export const ApproveOperation = query => {
+    return request({
+           url: 'api/userdefinedflow/ApproveOperation?',
+        method: 'post',
+        data: query
+     })
+ }
