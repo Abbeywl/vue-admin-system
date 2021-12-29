@@ -55,11 +55,16 @@ export default {
     },
     data: () => ({
         show: false,
-        textName: []
+        textName: [],
+        flowtype: ''
     }),
     watch: {
         node: {
             handler(val) {
+                this.$bus.$on('workFlowType', (data) => {
+                    this.flowtype = data;
+                    console.log('qqqq', this.flowtype);
+                });
                 this.node = val;
             },
             deep: true
@@ -82,6 +87,7 @@ export default {
             this.$emit('addnode', node);
         },
         delConditionNode() {
+            alert(1);
             this.$emit('delConditionNode');
         },
         setProperties(properties) {

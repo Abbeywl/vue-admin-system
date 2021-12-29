@@ -165,19 +165,19 @@ export default {
                 type: 'approver',
                 status: '',
                 properties: {
-                    type: 'approver',
-                    name: '请选择审批人',
-                    otherInfor: {
-                        userList: [],
-                        roleList: []
-                    },
-                    setCheckType: ['提交', '草稿'],
-                    setCheckVal: {
-                        submit: '提交',
-                        draft: '草稿',
-                        recall: '撤回',
-                        urged: '催办'
-                    }
+                    // type: 'approver',
+                    // name: '请选择审批人',
+                    // otherInfor: {
+                    //     userList: [],
+                    //     roleList: []
+                    // },
+                    // setCheckType: [],
+                    // setCheckVal: {
+                    //     submit: '提交',
+                    //     draft: '草稿',
+                    //     recall: '撤回',
+                    //     urged: '催办'
+                    // }
                 }
             };
             // console.log('新的审批节点:')
@@ -228,19 +228,19 @@ export default {
                 type: 'notifier',
                 status: '',
                 properties: {
-                    type: 'notifier',
-                    name: '请选择抄送人',
-                    otherInfor: {
-                        userList: [],
-                        roleList: []
-                    },
-                    setCheckType: ['提交', '草稿'],
-                    setCheckVal: {
-                        submit: '提交',
-                        draft: '草稿',
-                        recall: '撤回',
-                        urged: '催办'
-                    }
+                    // type: 'notifier',
+                    // name: '请选择抄送人',
+                    // otherInfor: {
+                    //     userList: [],
+                    //     roleList: []
+                    // },
+                    // setCheckType: [],
+                    // setCheckVal: {
+                    //     submit: '提交',
+                    //     draft: '草稿',
+                    //     recall: '撤回',
+                    //     urged: '催办'
+                    // }
                 }
             };
             this.$emit('addnode', node);

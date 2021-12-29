@@ -33,17 +33,17 @@
             <template slot="footer">
                 <a-button key="back" @click="handleCancel"> 取消 </a-button>
                 <!-- <a-button type="primary" :loading="confirmLoading" @click="nextStep"> 查看流程 </a-button> -->
-                <a-button type="primary" v-show="type == 'historyEdit'" :loading="confirmLoading" @click="operationBtn('approve')">
+                <!-- <a-button type="primary" v-show="type == 'historyEdit'" :loading="confirmLoading" @click="operationBtn('approve')">
                     审批
                 </a-button>
                 <a-button type="primary" v-show="type == 'historyEdit'" :loading="confirmLoading" @click="operationBtn('return')">
                     回退
-                </a-button>
+                </a-button> -->
                 <a-button key="submit" type="primary" :loading="confirmLoading" @click="handleOk"> 保存 </a-button>
             </template>
             <k-form-build :value="jsonData" ref="kfb" v-show="visible && type != 'history'" :dynamicData="dynamicData" />
             <div v-show="isflowShow" style="position: relative; height: 60vh">
-                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" :titleIsShow="false" />
+                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
             </div>
             <a-table
                 v-show="type == 'history'"
@@ -55,22 +55,36 @@
                     }
                 "
             >
+                <template slot="approveAction" slot-scope="record" class="oprea">
+                    <a class="" @click="operationBtn('approve', record)">审批</a>
+                    <a-divider type="vertical" />
+                    <a class="" @click="operationBtn('return', record)">回退</a>
+                </template>
                 <template slot="detailAction" slot-scope="record" class="oprea">
                     <a class="" @click="operation('edit', record)">编辑</a>
                     <a-divider type="vertical" />
                     <a class="" @click="operation('delete', record)">删除</a>
+                    <a-divider type="vertical" />
+                    <a class="" @click="operation('readflow', record)">查看流程</a>
                 </template>
                 <template slot="FlowStatusStr" slot-scope="record">
                     <a-tag :color="record.FlowStatus == 'Pending' ? 'green' : record.FlowStatus == 'Finished' ? 'blue' : 'red'">
-                        {{ record.FlowStatus == 'Pending' ? '审批中' : record.FlowStatus == 'Finished' ? '审批完成' : '回退' }}
+                        {{
+                            record.FlowStatus == 'Pending'
+                                ? '审批中' + (record.empTurn != null ? '(' + record.empTurn + ')' : '')
+                                : record.FlowStatus == 'Finished'
+                                ? '审批完成' + (record.empTurn != null ? '(' + record.empTurn + ')' : '')
+                                : '回退' + (record.empTurn != null ? '(' + record.empTurn + ')' : '')
+                        }}
                     </a-tag>
                 </template>
             </a-table>
         </a-modal>
-
-        <div v-show="isShow">
-            <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
-        </div>
+        <a-modal title="查看流程" :visible="isShow" @cancel="isShow = false" :width="'80vw'" :dialog-style="{ top: '20px' }">
+            <div v-show="isShow" style="position: relative; height: 60vh">
+                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
+            </div>
+        </a-modal>
     </div>
 </template>
 
@@ -86,7 +100,8 @@ import {
     DeleteProcessInfo,
     SaveProcessFlow,
     GetProcessFlowDataList,
-    ApproveOperation
+    ApproveOperation,
+    GetFlowStartNodeBtn
 } from '@/api/index.js';
 var columns = [
     {
@@ -124,7 +139,7 @@ export default {
     data() {
         return {
             jsonData: formJson,
-            modalwidth: 520,
+            modalwidth: 820,
             data: [],
             columns,
             visible: false,
@@ -165,7 +180,7 @@ export default {
         onSearch() {},
         operationSendOrRead(type, row) {
             this.TableRow = row;
-            let { FormXml, XmlContent } = row;
+            let { FormXml, XmlContent, ID } = row;
             this.jsonData = JSON.parse(FormXml);
             let XmlContentJson = JSON.parse(XmlContent);
             this.flowData = {};
@@ -175,10 +190,9 @@ export default {
             this.modalwidth = '80vw';
             switch (type) {
                 case 'send':
+                    this.GetFlowStartNodeBtnFn(ID);
                     this.type = 'send';
-
                     this.visible = !this.visible;
-
                     this.isflowShow = true;
                     break;
                 default:
@@ -278,7 +292,7 @@ export default {
         },
         handleCancel() {
             this.visible = false;
-            this.modalwidth = '520px';
+            this.modalwidth = '820px';
             this.isflowShow = false;
             this.$refs.kfb.reset();
         },
@@ -334,13 +348,17 @@ export default {
                     key: 'operation',
                     scopedSlots: { customRender: 'detailAction' }
                 };
+                let approveOpera = {
+                    title: '审核操作',
+                    key: 'approveAction',
+                    scopedSlots: { customRender: 'approveAction' }
+                };
                 let status = {
                     title: '状态',
                     key: 'FlowStatus',
                     scopedSlots: { customRender: 'FlowStatusStr' }
                 };
-                columnsArr.push(status);
-                columnsArr.push(opera);
+                columnsArr.push(status, approveOpera, opera);
                 this.historyColumns = columnsArr;
                 this.historyData = res;
             });
@@ -348,7 +366,7 @@ export default {
         operation(type, row) {
             this.operationRow = row;
             let { ID, FlowID, ProcessXml } = row;
-            let operationType = type == 'return' ? 'FallBack' : type == 'approve' ? 'Pass' : '';
+            let operationType = type == 'return' ? 'fallback' : type == 'approve' ? 'submit' : '';
             let obj = {
                 flowID: FlowID,
                 operationType: operationType
@@ -376,8 +394,9 @@ export default {
                     this.$delete(Copy, 'RefTable');
                     this.$delete(Copy, 'RefTableID');
                     this.$delete(Copy, 'row_number');
+                    this.$delete(Copy, 'NodeBtn');
+                    this.$delete(Copy, 'empTurn');
                     this.$nextTick(() => {
-                        //  this.$refs.kfb.setData=
                         this.$refs.kfb.form.setFieldsValue(Copy);
                         this.flowData = { node: XmlContentJson };
                     });
@@ -394,13 +413,13 @@ export default {
             }
         },
         operationBtn(type, row) {
-            let { FlowID } = this.operationRow;
-            let operationType = type == 'return' ? 'FallBack' : type == 'approve' ? 'Pass' : '';
+            let { FlowID } = row;
+            let operationType = type == 'return' ? 'fallback' : type == 'approve' ? 'submit' : '';
             let obj = {
                 flowID: FlowID,
                 operationType: operationType
             };
-            this.isflowShow = !this.isflowShow;
+            // this.isflowShow = !this.isflowShow;
             this.type = 'history';
             switch (type) {
                 case 'approve':
@@ -416,11 +435,17 @@ export default {
                 default:
                     break;
             }
+        },
+        GetFlowStartNodeBtnFn(id) {
+            GetFlowStartNodeBtn(id).then((res) => {
+                console.log(res);
+            });
         }
     },
     created() {},
     mounted() {
         this.GetFormListFn();
+        this.$bus.$emit('workFlowType', 'read');
     }
 };
 </script>

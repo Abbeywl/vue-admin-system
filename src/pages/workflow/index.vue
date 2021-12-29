@@ -27,10 +27,22 @@ export default {
             }
         };
     },
+    watch: {
+        data: {
+            handler(val) {
+                console.log('11111', data);
+            },
+            deep: true
+        }
+    },
+
     methods: {
         ok(data) {
             console.log(JSON.stringify(data));
         }
+    },
+    mounted() {
+        this.$bus.$emit('workFlowType', 'edit');
     }
 };
 </script>

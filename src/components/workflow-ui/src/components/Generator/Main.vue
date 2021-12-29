@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div class="fd-nav" v-if="titleIsShow">
+        <div>{{ JSON.stringify(data) }}</div>
+        <div class="fd-nav" v-if="flowtype == 'edit'">
             <div class="fd-nav-left">
                 <div class="fd-nav-back" @click="colse">
                     <i aria-label="icon: left" class="anticon anticon-left"
@@ -100,13 +101,10 @@ export default {
         title: {
             type: String,
             default: '工作流'
-        },
-        titleIsShow: {
-            type: Boolean,
-            default: true
         }
     },
     data: () => ({
+        flowtype: '',
         items: [],
         key: 0,
         errorsModal: false,
@@ -161,6 +159,10 @@ export default {
         this.initialNode();
         // }
         this.iteratorData(this.data1.node);
+        this.$bus.$on('workFlowType', (data) => {
+            console.log('数据加载完', data);
+            this.flowtype = data;
+        });
     },
     methods: {
         initialNode() {
@@ -187,16 +189,26 @@ export default {
         },
         delNode(node) {
             // wanglan  console.log("删除节点:" + node.properties.actionerRules[0].labelNames);
-            if (!this.titleIsShow) {
-                this.$message.warning('只能删除不可查看！');
-                return false;
+            if (this.flowtype == 'edit') {
+                delNode(node, this.data1.node, this.items);
+                this.key++;
             }
-            delNode(node, this.data1.node, this.items);
-            this.key++;
+
             // this.iteratorData(this.data1.node)
             // console.log(this.data1.node)
             // console.log(this.items)
         },
+        // delConditionNode(node) {
+        //     // wanglan  console.log("删除节点:" + node.properties.actionerRules[0].labelNames);
+        //     if (this.workFlowType) {
+        //         delConditionNode(node, this.data1.node, this.items);
+        //         this.key++;
+        //     }
+
+        //     // this.iteratorData(this.data1.node)
+        //     // console.log(this.data1.node)
+        //     // console.log(this.items)
+        // },
         save() {
             console.log('最外层', this.data1);
             //  var errors = checkData(this.data1.node);

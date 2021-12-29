@@ -2,9 +2,10 @@
     <div>
         <NodeWrap
             v-if="node.type == 'start' || node.type == 'approver' || node.type == 'notifier'"
-            :node="node"
+            :node.sync="node"
             @addnode="addnode"
             @delNode="delNode"
+            @getaa="getaa"
         />
         <ConditionNode
             v-if="node.type == 'condition' || node.type == 'conditionShunt'"
@@ -20,8 +21,8 @@
             @delConditionNode="delConditionNode"
             @addConditionFactor="addConditionFactor"
         /> -->
-        <BranchWrap v-if="node.type == 'route' || node.type == 'shunt'" :node="node" @addnode="addnode" @delNode="delNode" />
-        <BackNode v-if="node.type == 'back' || node.type == 'recall'" :node="node" @addnode="addnode" @delNode="delNode" />
+        <BranchWrap v-if="node.type == 'route' || node.type == 'shunt'" :node.sync="node" @addnode="addnode" @delNode="delNode" />
+        <BackNode v-if="node.type == 'back' || node.type == 'recall'" :node.sync="node" @addnode="addnode" @delNode="delNode" />
     </div>
 </template>
 <script>
@@ -45,10 +46,22 @@ export default {
             default: undefined
         }
     },
+    watch: {
+        node: {
+            handler(val) {},
+            deep: true
+        }
+    },
     mounted() {
-        // console.log('node 新节点:', this.node);
+        this.$bus.$on('workFlowType', (data) => {
+            console.log('数据加载完', data);
+        });
     },
     methods: {
+        getaa() {
+            console.log('====================', this.node);
+            this.$emit('getb', this.node);
+        },
         addnode(node) {
             this.$emit('addnode', node);
         },
@@ -61,7 +74,7 @@ export default {
         addConditionFactor(node) {
             this.$emit('addConditionFactor', node);
             this.node = node;
-            // console.log(this.node)  
+            // console.log(this.node)
         }
     }
 };

@@ -154,8 +154,16 @@ export const GetProcessFlowDataList = query => {
  
 export const ApproveOperation = query => {
     return request({
-           url: 'api/userdefinedflow/ApproveOperation?',
+        url: 'api/userdefinedflow/ApproveOperation?',
         method: 'post',
         data: query
+     })
+ }
+//流程发起时获取首节点btn类型
+
+export const  GetFlowStartNodeBtn = id => {
+    return request({
+        url: 'api/userdefinedflow/GetFlowStartNodeBtn?relationID='+id,
+        method: 'get',
      })
  }

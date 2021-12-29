@@ -52,7 +52,7 @@ router.beforeEach((to, from, next) => {
         }
     }
 });
-
+Vue.prototype.$bus = new Vue()
 new Vue({
     router,
     i18n,

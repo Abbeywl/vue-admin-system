@@ -44,12 +44,14 @@
         </a-modal>
         <div v-show="isShow">
             <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
+            <!-- <workflow1 :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" /> -->
         </div>
     </div>
 </template>
 
 <script>
 import workflow from '../../components/workflow-ui/src/components/Generator/Main.vue';
+import workflow1 from './index.vue';
 import '../../components/workflow-ui/src/assets/style.css';
 import formJson from './form.json';
 import sendform from './sendform.json';
@@ -115,14 +117,31 @@ export default {
             },
             TableRow: {},
             isShow: false,
-            flowData: {},
+            flowData: {
+                title: '请假',
+                node: {
+                    name: '发起人',
+                    type: 'start',
+                    nodeId: 'sid-startevent',
+                    properties: {
+                        name: '所有人'
+                    }
+                }
+            },
             ProcessTitle: '',
             dynamicData: { formData: [] },
             type: ''
         };
     },
     computed: {},
-    watch: {},
+    watch: {
+        flowData: {
+            handler(val) {
+                console.log('=====sss===============', val);
+            },
+            deep: true
+        }
+    },
     methods: {
         GetFormListFn() {
             GetProcessList(this.tableParams).then((res) => {
@@ -188,7 +207,7 @@ export default {
             let ProcessName = row.ProcessName;
             this.ProcessTitle = ProcessName;
             let { ID } = row;
-            this.flowData = {};
+            // this.flowData = {};
             if (!isRead) {
                 QueryProcessXml(ID).then((res) => {
                     if (res.XmlContent) {
@@ -200,9 +219,13 @@ export default {
                     }
                 });
             }
-            this.flowData = {
-                //   title: ProcessName,
-                node: defaultData
+            this.flowData.node = {
+                name: '发起人',
+                type: 'start',
+                nodeId: 'sid-startevent',
+                properties: {
+                    name: '所有人'
+                }
             };
             this.isShow = true;
         },
@@ -263,6 +286,7 @@ export default {
         //工作流保存
         flowSave(data) {
             console.log(JSON.stringify(data));
+            return;
             let xmlContent = JSON.stringify(data.node);
             let { ID } = this.TableRow;
             let formdata = { ID: ID, xmlContent: xmlContent };
@@ -284,6 +308,7 @@ export default {
     },
     created() {},
     mounted() {
+        this.$bus.$emit('workFlowType', 'edit');
         this.GetFormListFn();
         let tabledata = {
             IsPaging: true,

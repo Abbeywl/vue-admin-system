@@ -15,7 +15,7 @@
                     <div class="side-modal-body-content">
                         <ul class="tab-tilte">
                             <li :class="{ active: cur == 0 }" @click="cur = 0">发起人</li>
-                            <li :class="{ active: cur == 1 }" @click="cur = 1">设置</li>
+                            <li :class="{ active: cur == 1 }" @click="cur = 1" v-show="node.type != 'notifier'">设置</li>
                         </ul>
                         <div class="tab-content">
                             <div v-show="cur == 0">
@@ -52,10 +52,10 @@
                             </div>
                             <div v-show="cur == 1" class="setting">
                                 <div>
-                                    <a-checkbox-group class="width_100" @change="onChange">
+                                    <a-checkbox-group class="width_100" v-model="checkedValues" @change="onChange">
                                         <a-row :gutter="[0, 15]">
                                             <a-col :span="1">
-                                                <a-checkbox :default-checked="false" value="提交" />
+                                                <a-checkbox :default-checked="false" value="submit" />
                                             </a-col>
                                             <a-col :span="4">
                                                 <span>提交</span>
@@ -64,9 +64,9 @@
                                                 <a-input :value="submitVal" />
                                             </a-col>
                                         </a-row>
-                                        <a-row :gutter="[0, 15]">
+                                        <a-row :gutter="[0, 15]" v-show="node.type == 'start'">
                                             <a-col :span="1">
-                                                <a-checkbox :default-checked="false" value="草稿" />
+                                                <a-checkbox :default-checked="false" value="draft" />
                                             </a-col>
                                             <a-col :span="4">
                                                 <span>草稿</span>
@@ -77,7 +77,7 @@
                                         </a-row>
                                         <a-row :gutter="[0, 15]">
                                             <a-col :span="1">
-                                                <a-checkbox :default-checked="false" value="撤回" />
+                                                <a-checkbox :default-checked="false" value="recall" />
                                             </a-col>
                                             <a-col :span="4">
                                                 <span>撤回</span>
@@ -86,9 +86,9 @@
                                                 <a-input :value="recallVal" />
                                             </a-col>
                                         </a-row>
-                                        <a-row :gutter="[0, 15]">
+                                        <a-row :gutter="[0, 15]" v-show="node.type != 'start'">
                                             <a-col :span="1">
-                                                <a-checkbox :default-checked="false" value="退回" />
+                                                <a-checkbox :default-checked="false" value="fallback" />
                                             </a-col>
                                             <a-col :span="4">
                                                 <span>退回</span>
@@ -97,9 +97,9 @@
                                                 <a-input :value="backVal" />
                                             </a-col>
                                         </a-row>
-                                        <a-row :gutter="[0, 15]">
+                                        <a-row :gutter="[0, 15]" v-show="node.type == 'start'">
                                             <a-col :span="1">
-                                                <a-checkbox :default-checked="false" value="催办" />
+                                                <a-checkbox :default-checked="false" value="urged" />
                                             </a-col>
                                             <a-col :span="4">
                                                 <span>催办</span>
@@ -110,7 +110,7 @@
                                         </a-row>
                                     </a-checkbox-group>
                                 </div>
-                                <div v-show="node.type != 'condition'">
+                                <div v-show="node.type != 'condition' && node.type != 'start'">
                                     <h2 class="t_left">审批方式</h2>
                                     <a-row>
                                         <a-radio-group v-model="approval" @change="approvalOnChange">
@@ -136,8 +136,8 @@
                 </div>
             </a-drawer>
             <!-- </div> -->
+            <addUserModal ref="addUserModal" :visible="visible" @selectFun="selectFun" />
         </div>
-        <addUserModal ref="addUserModal" :visible="visible" @selectFun="selectFun" />
     </div>
 </template>
 <script>
@@ -186,10 +186,10 @@ export default {
             },
             setCheckType: [],
             setCheckVal: {
-                submit: '提交',
-                draft: '草稿',
-                recall: '撤回',
-                urged: '催办'
+                // submit: '提交',
+                // draft: '草稿',
+                // recall: '撤回',
+                // urged: '催办'
             }
         },
         submitVal: '提交',
@@ -206,11 +206,10 @@ export default {
         },
         dialog1(val) {
             this.$emit('update:dialog', val);
+            if (val) this.setValue();
         },
         properties: {
-            handler(val) {
-                // console.log('=====ff===============', val);
-            },
+            handler(val) {},
             deep: true
         }
     },
@@ -220,22 +219,24 @@ export default {
         } else {
             return false;
         }
-        // // Object.assign(this.properties1, this.properties)
-        // if (this.properties1) {
-        if (!this.properties1.setCheckVal) return false;
-        this.submitVal = !this.properties1.setCheckVal.submit ? this.submitVal : this.properties1.setCheckVal.submit;
-        this.draftVal = !this.properties1.setCheckVal.draft ? this.draftVal : this.properties1.setCheckVal.draft;
-        this.recallVal = !this.properties1.setCheckVal.recall ? this.recallVal : this.properties1.setCheckVal.recall;
-        this.urgedVal = !this.properties1.setCheckVal.urged ? this.urgedVal : this.properties1.setCheckVal.urged;
-        this.backVal = !this.properties1.setCheckVal.back ? this.backVal : this.properties1.setCheckVal.back;
-
-        this.targetRoleKeys = this.properties1.otherInfor.roleList;
-        this.targetUserKeys = this.properties1.otherInfor.userList;
-        // this.init()
-        Object.assign(this.temp, this.properties1);
-        // }
+        this.setValue();
     },
     methods: {
+        setValue() {
+            if (this.properties1.setCheckVal) {
+                this.submitVal = !this.properties1.setCheckVal.submit ? this.submitVal : this.properties1.setCheckVal.submit;
+                this.draftVal = !this.properties1.setCheckVal.draft ? this.draftVal : this.properties1.setCheckVal.draft;
+                this.recallVal = !this.properties1.setCheckVal.recall ? this.recallVal : this.properties1.setCheckVal.recall;
+                this.urgedVal = !this.properties1.setCheckVal.urged ? this.urgedVal : this.properties1.setCheckVal.urged;
+                this.backVal = !this.properties1.setCheckVal.back ? this.backVal : this.properties1.setCheckVal.back;
+            }
+            if (this.properties1.otherInfor) {
+                this.targetRoleKeys = this.properties1.otherInfor.roleList;
+                this.targetUserKeys = this.properties1.otherInfor.userList;
+            }
+            if (this.properties1) this.checkedValues = this.properties1.setCheckType;
+            Object.assign(this.temp, this.properties1);
+        },
         // 添加角色
         addRole(type, _targetKeys) {
             this.$refs.addUserModal.getAddType(type, _targetKeys);
@@ -263,10 +264,11 @@ export default {
             this.properties1.name = this.targetUserKeys;
             this.properties1.otherInfor = otherInfor;
             this.properties1.setCheckType = setCheckType;
-            if (this.properties.type !== 'start') {
+            if (this.properties1.type === 'approver') {
                 this.properties1.approval = this.approval;
             }
             Object.assign(this.temp, this.properties1);
+            console.log(this.properties1);
             this.$emit('setProperties', this.properties1);
         },
         cancel() {
