@@ -133,9 +133,7 @@ export const deleteNode = (nodeDel, node) => {
       nodeDel.childNode.prevId = temp.nodeId
       temp.childNode = nodeDel.childNode
       return
-    } else {
-      break
-    }
+    } 
     // 循环结束
     if (temp.childNode != null) temp = temp.childNode
   }

@@ -110,7 +110,7 @@
                                         </a-row>
                                     </a-checkbox-group>
                                 </div>
-                                <div v-show="node.type != 'condition' && node.type != 'start'">
+                                <div v-show="node.type != 'condition' && node.type != 'start' && node.type != 'approver'">
                                     <h2 class="t_left">审批方式</h2>
                                     <a-row>
                                         <a-radio-group v-model="approval" @change="approvalOnChange">
@@ -264,9 +264,7 @@ export default {
             this.properties1.name = this.targetUserKeys;
             this.properties1.otherInfor = otherInfor;
             this.properties1.setCheckType = setCheckType;
-            if (this.properties1.type === 'approver') {
-                this.properties1.approval = this.approval;
-            }
+            // this.properties1.approval = this.approval;
             Object.assign(this.temp, this.properties1);
             console.log(this.properties1);
             this.$emit('setProperties', this.properties1);

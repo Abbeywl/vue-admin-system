@@ -119,14 +119,7 @@ export default {
             isShow: false,
             flowData: {
                 title: '请假',
-                node: {
-                    name: '发起人',
-                    type: 'start',
-                    nodeId: 'sid-startevent',
-                    properties: {
-                        name: '所有人'
-                    }
-                }
+                node: {}
             },
             ProcessTitle: '',
             dynamicData: { formData: [] },
@@ -137,7 +130,7 @@ export default {
     watch: {
         flowData: {
             handler(val) {
-                console.log('=====sss===============', val);
+                // console.log('=====sss===============', val);
             },
             deep: true
         }
@@ -202,13 +195,16 @@ export default {
         //     this.GetTableDataListFn(row.TableName);
         // },
         //表单发起点击
-        operationCreateOrRead(row, isRead) {
+        operationCreateOrRead(row, isCreate) {
             this.TableRow = row;
             let ProcessName = row.ProcessName;
             this.ProcessTitle = ProcessName;
             let { ID } = row;
             // this.flowData = {};
-            if (!isRead) {
+            localStorage.setItem('workFlowType', 'create');
+            if (!isCreate) {
+                localStorage.setItem('workFlowType', 'read');
+                this.$bus.$emit('workFlowType', 'read');
                 QueryProcessXml(ID).then((res) => {
                     if (res.XmlContent) {
                         this.$nextTick(function () {
@@ -219,6 +215,7 @@ export default {
                     }
                 });
             }
+
             this.flowData.node = {
                 name: '发起人',
                 type: 'start',
@@ -286,7 +283,6 @@ export default {
         //工作流保存
         flowSave(data) {
             console.log(JSON.stringify(data));
-            return;
             let xmlContent = JSON.stringify(data.node);
             let { ID } = this.TableRow;
             let formdata = { ID: ID, xmlContent: xmlContent };

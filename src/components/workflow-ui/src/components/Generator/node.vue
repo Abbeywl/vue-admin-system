@@ -5,7 +5,6 @@
             :node.sync="node"
             @addnode="addnode"
             @delNode="delNode"
-            @getaa="getaa"
         />
         <ConditionNode
             v-if="node.type == 'condition' || node.type == 'conditionShunt'"
@@ -52,15 +51,15 @@ export default {
             deep: true
         }
     },
-    mounted() {
-        this.$bus.$on('workFlowType', (data) => {
-            console.log('数据加载完', data);
-        });
-    },
+    mounted() {},
+    data: () => ({
+        flowtype: ''
+    }),
     methods: {
-        getaa() {
-            console.log('====================', this.node);
-            this.$emit('getb', this.node);
+        test1() {
+            this.$bus.$on('workFlowType', (data) => {
+                console.log('数据加载完node', data);
+            });
         },
         addnode(node) {
             this.$emit('addnode', node);

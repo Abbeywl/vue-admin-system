@@ -60,6 +60,7 @@ export default {
     },
     mounted() {
         //  this.getDtata();
+        localStorage.setItem('workFlowType', 'create');
     },
     methods: {
         getDtata() {},

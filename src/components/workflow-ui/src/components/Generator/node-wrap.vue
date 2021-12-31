@@ -21,9 +21,7 @@ export default {
     },
     watch: {
         node: {
-            handler(val) {
-                // console.log("====================", val);
-            },
+            handler(val) {},
             deep: true
         }
     },

@@ -29,9 +29,7 @@ export default {
     },
     watch: {
         data: {
-            handler(val) {
-                console.log('11111', data);
-            },
+            handler(val) {},
             deep: true
         }
     },
@@ -42,6 +40,7 @@ export default {
         }
     },
     mounted() {
+        localStorage.setItem('workFlowType', 'create');
         this.$bus.$emit('workFlowType', 'edit');
     }
 };

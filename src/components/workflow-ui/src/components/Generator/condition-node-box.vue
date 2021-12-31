@@ -3,7 +3,7 @@
         <div class="auto-judge node_8f5e_917f">
             <div class="sort-left">&lt;</div>
             <div class="title-wrapper">
-                <span style="float: right; color: white" @click="delConditionNode">X</span>
+                <span style="float: right; color: white" @click="delConditionNode" v-show="flowtype == 'create'">X</span>
                 <input
                     type="text"
                     v-model="node.name"
@@ -56,15 +56,11 @@ export default {
     data: () => ({
         show: false,
         textName: [],
-        flowtype: ''
+        flowtype: 'create'
     }),
     watch: {
         node: {
             handler(val) {
-                this.$bus.$on('workFlowType', (data) => {
-                    this.flowtype = data;
-                    console.log('qqqq', this.flowtype);
-                });
                 this.node = val;
             },
             deep: true
@@ -79,20 +75,18 @@ export default {
     },
     mounted() {
         this.getText();
-        console.log(this.node);
+        this.flowtype = localStorage.getItem('workFlowType');
     },
+
     methods: {
         addnode(node) {
-            console.log(node);
             this.$emit('addnode', node);
         },
         delConditionNode() {
-            alert(1);
             this.$emit('delConditionNode');
         },
         setProperties(properties) {
             this.getText();
-            console.log('ssproperties', properties);
             this.node.properties = properties;
             this.$emit('addConditionFactor', this.node);
             // this.show = true;

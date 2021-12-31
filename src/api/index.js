@@ -166,4 +166,12 @@ export const  GetFlowStartNodeBtn = id => {
         url: 'api/userdefinedflow/GetFlowStartNodeBtn?relationID='+id,
         method: 'get',
      })
+}
+// 审核提交
+export const FlowOperation = query => {
+     return request({
+        url: 'api/userdefinedflow/FlowOperation?',
+        method: 'post',
+        data: query
+     })
  }

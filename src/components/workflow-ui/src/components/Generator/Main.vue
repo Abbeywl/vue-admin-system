@@ -1,7 +1,6 @@
 <template>
     <div>
-        <div>{{ JSON.stringify(data) }}</div>
-        <div class="fd-nav" v-if="flowtype == 'edit'">
+        <div class="fd-nav">
             <div class="fd-nav-left">
                 <div class="fd-nav-back" @click="colse">
                     <i aria-label="icon: left" class="anticon anticon-left"
@@ -27,7 +26,7 @@
                     <div class="fd-nav-item"><span class="order-num">1</span>{{ title }}</div>
                 </div>
             </div>
-            <div class="fd-nav-right">
+            <div class="fd-nav-right" v-show="flowtype == 'create'">
                 <button type="button" class="ant-btn button-preview" @click="preview">
                     <span>预览JSON</span>
                 </button>
@@ -47,7 +46,7 @@
                     <div
                         id="box-scale"
                         :key="key"
-                        class="box-scale"
+                        :class="flowtype == 'create' ? ' box-scale' : 'box-scale nopointer'"
                         :style="`transform: ${zoomStyle.transform}; transform-origin: 50% 0px 0px;`"
                     >
                         <Node v-for="(item, index) in items" :key="index" :node="item" @addnode="addnode" @delNode="delNode(item)" />
@@ -104,7 +103,7 @@ export default {
         }
     },
     data: () => ({
-        flowtype: '',
+        flowtype: 'create',
         items: [],
         key: 0,
         errorsModal: false,
@@ -142,6 +141,8 @@ export default {
     watch: {
         data: {
             handler(val, newval) {
+                this.flowtype = localStorage.getItem('workFlowType');
+                console.log(this.flowtype);
                 if (!val.node) {
                     val.node = defaultData;
                 }
@@ -151,7 +152,11 @@ export default {
             deep: true
         }
     },
+    created() {
+        this.flowtype = localStorage.getItem('workFlowType');
+    },
     mounted() {
+        this.flowtype = localStorage.getItem('workFlowType');
         if (this.data && this.data.node) {
             this.data1 = this.data;
         }
@@ -159,10 +164,6 @@ export default {
         this.initialNode();
         // }
         this.iteratorData(this.data1.node);
-        this.$bus.$on('workFlowType', (data) => {
-            console.log('数据加载完', data);
-            this.flowtype = data;
-        });
     },
     methods: {
         initialNode() {
@@ -250,4 +251,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.nopointer {
+    pointer-events: none;
+}
 </style>
