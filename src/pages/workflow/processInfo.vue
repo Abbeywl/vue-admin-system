@@ -51,7 +51,6 @@
 
 <script>
 import workflow from '../../components/workflow-ui/src/components/Generator/Main.vue';
-import workflow1 from './index.vue';
 import '../../components/workflow-ui/src/assets/style.css';
 import formJson from './form.json';
 import sendform from './sendform.json';
@@ -201,10 +200,12 @@ export default {
             this.ProcessTitle = ProcessName;
             let { ID } = row;
             // this.flowData = {};
-            localStorage.setItem('workFlowType', 'create');
+            // localStorage.setItem('workFlowType', 'create');
+            this.$bus.$emit('workFlowType', 'create');
             if (!isCreate) {
-                localStorage.setItem('workFlowType', 'read');
                 this.$bus.$emit('workFlowType', 'read');
+
+                // localStorage.setItem('workFlowType', 'read');
                 QueryProcessXml(ID).then((res) => {
                     if (res.XmlContent) {
                         this.$nextTick(function () {
@@ -304,7 +305,6 @@ export default {
     },
     created() {},
     mounted() {
-        this.$bus.$emit('workFlowType', 'edit');
         this.GetFormListFn();
         let tabledata = {
             IsPaging: true,

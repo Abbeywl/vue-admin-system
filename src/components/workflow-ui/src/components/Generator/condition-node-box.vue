@@ -3,7 +3,7 @@
         <div class="auto-judge node_8f5e_917f">
             <div class="sort-left">&lt;</div>
             <div class="title-wrapper">
-                <span style="float: right; color: white" @click="delConditionNode" v-show="flowtype == 'create'">X</span>
+                <span style="float: right; color: white" @click="delConditionNode">X</span>
                 <input
                     type="text"
                     v-model="node.name"
@@ -55,8 +55,7 @@ export default {
     },
     data: () => ({
         show: false,
-        textName: [],
-        flowtype: 'create'
+        textName: []
     }),
     watch: {
         node: {
@@ -75,7 +74,6 @@ export default {
     },
     mounted() {
         this.getText();
-        this.flowtype = localStorage.getItem('workFlowType');
     },
 
     methods: {

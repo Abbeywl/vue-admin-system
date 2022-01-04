@@ -40,8 +40,7 @@ export default {
         }
     },
     mounted() {
-        localStorage.setItem('workFlowType', 'create');
-        this.$bus.$emit('workFlowType', 'edit');
+        this.$bus.$emit('workFlowType', 'create');
     }
 };
 </script>

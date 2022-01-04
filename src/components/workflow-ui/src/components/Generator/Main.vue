@@ -46,8 +46,10 @@
                     <div
                         id="box-scale"
                         :key="key"
-                        :class="flowtype == 'create' ? ' box-scale' : 'box-scale nopointer'"
-                        :style="`transform: ${zoomStyle.transform}; transform-origin: 50% 0px 0px;`"
+                        class="box-scale"
+                        :style="`transform: ${zoomStyle.transform}; transform-origin: 50% 0px 0px;pointer-events: ${
+                            flowtype != 'create' ? 'none' : 'auto'
+                        };`"
                     >
                         <Node v-for="(item, index) in items" :key="index" :node="item" @addnode="addnode" @delNode="delNode(item)" />
                         <EndNode />
@@ -100,6 +102,10 @@ export default {
         title: {
             type: String,
             default: '工作流'
+        },
+        workflowtype: {
+            type: String,
+            default: ''
         }
     },
     data: () => ({
@@ -141,8 +147,6 @@ export default {
     watch: {
         data: {
             handler(val, newval) {
-                this.flowtype = localStorage.getItem('workFlowType');
-                console.log(this.flowtype);
                 if (!val.node) {
                     val.node = defaultData;
                 }
@@ -150,13 +154,25 @@ export default {
                 this.iteratorData(this.data1.node);
             },
             deep: true
+        },
+        workflowtype: {
+            handler(val, newval) {
+                console.log(val);
+            },
+            deep: true
         }
     },
+    beforeCreate() {},
     created() {
-        this.flowtype = localStorage.getItem('workFlowType');
+        let that = this;
+        that.$nextTick(function () {
+            this.$bus.$on('workFlowType', (data) => {
+                that.flowtype = data;
+                console.log(data);
+            });
+        });
     },
     mounted() {
-        this.flowtype = localStorage.getItem('workFlowType');
         if (this.data && this.data.node) {
             this.data1 = this.data;
         }
@@ -190,26 +206,13 @@ export default {
         },
         delNode(node) {
             // wanglan  console.log("删除节点:" + node.properties.actionerRules[0].labelNames);
-            if (this.flowtype == 'edit') {
-                delNode(node, this.data1.node, this.items);
-                this.key++;
-            }
+            delNode(node, this.data1.node, this.items);
+            this.key++;
 
             // this.iteratorData(this.data1.node)
             // console.log(this.data1.node)
             // console.log(this.items)
         },
-        // delConditionNode(node) {
-        //     // wanglan  console.log("删除节点:" + node.properties.actionerRules[0].labelNames);
-        //     if (this.workFlowType) {
-        //         delConditionNode(node, this.data1.node, this.items);
-        //         this.key++;
-        //     }
-
-        //     // this.iteratorData(this.data1.node)
-        //     // console.log(this.data1.node)
-        //     // console.log(this.items)
-        // },
         save() {
             console.log('最外层', this.data1);
             //  var errors = checkData(this.data1.node);
@@ -244,6 +247,10 @@ export default {
         handleCancel() {
             this.viewModal = false;
             this.$emit('close');
+        },
+        changeType(type) {
+            this.flowtype = type;
+            console.log(type);
         }
     }
 };

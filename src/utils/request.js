@@ -3,7 +3,7 @@ import Qs from 'qs';
 const request = axios.create({
     // process.env.NODE_ENV === 'development',// 来判断是否开发环境
     // easy-mock服务挂了，暂时不使用了
-    baseURL: 'http://localhost:8080/',
+    baseURL: 'http://47.103.110.240:9088/',
     headers: {'Content-Type': 'application/json;charset=UTF-8'},
     // baseURL: 'api​', // api 的 base_url,
     timeout: 5000,

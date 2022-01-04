@@ -56,11 +56,6 @@ export default {
         flowtype: ''
     }),
     methods: {
-        test1() {
-            this.$bus.$on('workFlowType', (data) => {
-                console.log('数据加载完node', data);
-            });
-        },
         addnode(node) {
             this.$emit('addnode', node);
         },

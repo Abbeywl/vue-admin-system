@@ -55,7 +55,7 @@
             </template>
             <k-form-build :value="jsonData" ref="kfb" v-show="visible && type != 'history'" :dynamicData="dynamicData" />
             <div v-show="isflowShow" style="position: relative; height: 60vh">
-                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
+                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" :workflowtype.sync="flowtype" />
             </div>
             <a-table
                 v-show="type == 'history'"
@@ -107,7 +107,7 @@
                 </template>
             </a-table>
         </a-modal>
-        <a-modal title="查看流程" :visible="isShow" @cancel="isShow = false" :width="'80vw'" :dialog-style="{ top: '20px' }">
+        <a-modal title="查看流fd程" :visible="isShow" @cancel="isShow = false" :width="'80vw'" :dialog-style="{ top: '20px' }">
             <div v-show="isShow" style="position: relative; height: 60vh">
                 <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
             </div>
@@ -194,7 +194,8 @@ export default {
             operationRow: {},
             operationBtnArr: [],
             //提交类型
-            OperationType: ''
+            OperationType: '',
+            flowtype: 'read'
         };
     },
     computed: {},
@@ -211,7 +212,8 @@ export default {
         },
         onSearch() {},
         operationSendOrRead(type, row) {
-            localStorage.setItem('workFlowType', 'read');
+            var that = this;
+            this.flowtype = 'create';
             this.operationBtnArr = [];
             this.TableRow = row;
             let { FormXml, XmlContent, ID } = row;
@@ -225,10 +227,16 @@ export default {
                     this.GetFlowStartNodeBtnFn(ID);
                     this.type = 'send';
                     this.visible = !this.visible;
+                    that.$nextTick(function () {
+                        this.$bus.$emit('workFlowType', 'read');
+                    });
                     this.isflowShow = true;
                     break;
                 default:
                     this.visible = false;
+                    that.$nextTick(function () {
+                        this.$bus.$emit('workFlowType', 'read');
+                    });
                     this.isShow = true;
                     break;
             }
@@ -427,6 +435,7 @@ export default {
                 case 'delete':
                     break;
                 default:
+                    this.$bus.$emit('workFlowType', 'read');
                     this.visible = false;
                     let ProcessXmlJson = JSON.parse(ProcessXml);
                     this.flowData = { node: ProcessXmlJson };
@@ -500,8 +509,8 @@ export default {
     },
     created() {},
     mounted() {
+        // this.$bus.$emit('workFlowType', 'read');
         this.GetFormListFn();
-        this.$bus.$emit('workFlowType', 'read');
     }
 };
 </script>
