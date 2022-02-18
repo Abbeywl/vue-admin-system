@@ -3,8 +3,6 @@
         <a-row v-show="!isShow">
             <a-col :span="18" class="btn_group">
                 <a-button @click="showModal" type="primary"> 新增 </a-button>
-                <a-button @click="handleAdd" type=""> 导入EXCEL </a-button>
-                <a-button @click="handleAdd" type=""> 下载模板 </a-button>
             </a-col>
 
             <a-col :span="6" class="search">
@@ -43,8 +41,7 @@
             <k-form-build :value="jsonData" ref="kfb" v-show="isForm" :dynamicData="dynamicData" />
         </a-modal>
         <div v-show="isShow">
-            <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
-            <!-- <workflow1 :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" /> -->
+            <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" :workflowType1="workflowtype" />
         </div>
     </div>
 </template>
@@ -116,21 +113,18 @@ export default {
             },
             TableRow: {},
             isShow: false,
-            flowData: {
-                title: '请假',
-                node: {}
-            },
+            flowData: {},
+            nodeData: {},
             ProcessTitle: '',
             dynamicData: { formData: [] },
-            type: ''
+            type: '',
+            workflowtype: 'create'
         };
     },
     computed: {},
     watch: {
         flowData: {
-            handler(val) {
-                // console.log('=====sss===============', val);
-            },
+            handler(val, newval) {},
             deep: true
         }
     },
@@ -141,10 +135,6 @@ export default {
             });
         },
         onSearch() {},
-
-        handleAdd() {
-            console.log(1);
-        },
         operationEdit(row) {
             this.type = 'edit';
             this.jsonData = formJson;
@@ -163,11 +153,6 @@ export default {
             this.jsonData = sendform;
             this.TableRow = row;
             let { ID, ProcessName, ProcessStatus, Description } = row;
-            // let obj = { processName: ProcessName, processStatus: ProcessStatus, description: Description };
-            // this.$nextTick(function () {
-            //     this.$refs.kfb.form.setFieldsValue(obj);
-            // });
-
             this.visible = !this.visible;
         },
         operationDelete(row) {
@@ -187,12 +172,7 @@ export default {
                 }
             });
         },
-        // operationHistory(row) {
-        //     this.isForm = false;
-        //     this.TableRow = row;
-        //     this.visible = !this.visible;
-        //     this.GetTableDataListFn(row.TableName);
-        // },
+
         //表单发起点击
         operationCreateOrRead(row, isCreate) {
             this.TableRow = row;
@@ -202,29 +182,34 @@ export default {
             // this.flowData = {};
             // localStorage.setItem('workFlowType', 'create');
             this.$bus.$emit('workFlowType', 'create');
+            this.workflowtype = 'create';
             if (!isCreate) {
+                this.workflowtype = 'read';
                 this.$bus.$emit('workFlowType', 'read');
-
                 // localStorage.setItem('workFlowType', 'read');
+                let that = this;
                 QueryProcessXml(ID).then((res) => {
                     if (res.XmlContent) {
-                        this.$nextTick(function () {
-                            this.flowData.node = JSON.parse(res.XmlContent);
-                        });
-                        this.isShow = true;
+                        let XmlContentJson = JSON.parse(res.XmlContent);
+                        that.flowData = {};
+                        that.flowData = { node: XmlContentJson };
+                        that.isShow = true;
                         return;
                     }
                 });
+            } else {
+                this.flowData = { node: {} };
+                this.flowData = {
+                    node: {
+                        name: '发起人',
+                        type: 'start',
+                        nodeId: 'sid-startevent',
+                        properties: {
+                            name: '所有人'
+                        }
+                    }
+                };
             }
-
-            this.flowData.node = {
-                name: '发起人',
-                type: 'start',
-                nodeId: 'sid-startevent',
-                properties: {
-                    name: '所有人'
-                }
-            };
             this.isShow = true;
         },
         showModal() {
@@ -250,14 +235,10 @@ export default {
                             break;
                         default:
                             res.ProcessID = ID;
-                            SaveFlowFormRelationInfo(res)
-                                .then((res) => {
-                                    this.$message.success('发起成功');
-                                    this.GetFormListFn();
-                                })
-                                .catch((err) => {
-                                    this.$$message.warning('err');
-                                });
+                            SaveFlowFormRelationInfo(res).then((res) => {
+                                this.$message.success('发起成功');
+                                this.GetFormListFn();
+                            });
                             break;
                     }
                 })
@@ -283,27 +264,20 @@ export default {
         },
         //工作流保存
         flowSave(data) {
-            console.log(JSON.stringify(data));
             let xmlContent = JSON.stringify(data.node);
             let { ID } = this.TableRow;
             let formdata = { ID: ID, xmlContent: xmlContent };
-
-            SaveProcessXml(formdata)
-                .then((res) => {
-                    console.log(res);
-                    this.isShow = false;
-                    this.$message.success('保存成功');
-                    this.GetFormListFn();
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+            SaveProcessXml(formdata).then((res) => {
+                console.log(res);
+                this.isShow = false;
+                this.$message.success('保存成功');
+                this.GetFormListFn();
+            });
         },
         closeFn() {
             this.isShow = false;
         }
     },
-    created() {},
     mounted() {
         this.GetFormListFn();
         let tabledata = {
@@ -323,14 +297,7 @@ export default {
             }
             this.dynamicData.formData = formArr;
         });
-    },
-    beforeCreate() {},
-    beforeMount() {},
-    beforeUpdate() {},
-    updated() {},
-    beforeDestroy() {},
-    destroyed() {},
-    activated() {}
+    }
 };
 </script>
 <style lang='less' scoped>
@@ -367,5 +334,4 @@ export default {
     height: 100%;
     width: 100%;
 }
-//@import url(); 引入公共css类
 </style>

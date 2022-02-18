@@ -1,7 +1,7 @@
 <template>
     <div class="branch-wrap">
         <div class="branch-box-wrap">
-            <BranchBox @addCondition="addCondition" @delNode="delNode">
+            <BranchBox @addCondition="addCondition" @delNode="delNode" :workflowtype="workflowtype">
                 <ColBox
                     v-for="(item, index) in node.conditionNodes"
                     :key="index"
@@ -10,9 +10,10 @@
                     :total="node.conditionNodes ? node.conditionNodes.length : 0"
                     @delConditionNode="delConditionNode(item)"
                     @addConditionFactor="addConditionFactor"
+                    :workflowtype="workflowtype"
                 />
             </BranchBox>
-            <AddNodeBtnBox :node="node" @addnode="addnode" />
+            <AddNodeBtnBox :node="node" @addnode="addnode" :workflowtype="workflowtype" />
         </div>
     </div>
 </template>
@@ -31,6 +32,10 @@ export default {
         node: {
             type: Object,
             default: undefined
+        },
+        workflowtype: {
+            type: String,
+            default: 'create'
         }
     },
     data: () => ({

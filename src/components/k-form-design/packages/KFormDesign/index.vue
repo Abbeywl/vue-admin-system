@@ -1,7 +1,7 @@
 <template>
     <a-config-provider :locale="locale">
         <div class="form-designer-container-9136076486841527">
-            <k-header v-if="showHead" ref="header" />
+            <k-header v-if="showHead" ref="header" @handleSave="handleSave" />
             <!-- 操作区域 start -->
             <operatingArea
                 v-if="toolbarsTop"

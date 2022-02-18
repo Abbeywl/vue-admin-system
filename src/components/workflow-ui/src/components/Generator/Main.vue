@@ -26,6 +26,7 @@
                     <div class="fd-nav-item"><span class="order-num">1</span>{{ title }}</div>
                 </div>
             </div>
+            {{ workflowType1 }}{{ '===' }}
             <div class="fd-nav-right" v-show="flowtype == 'create'">
                 <button type="button" class="ant-btn button-preview" @click="preview">
                     <span>预览JSON</span>
@@ -48,10 +49,18 @@
                         :key="key"
                         class="box-scale"
                         :style="`transform: ${zoomStyle.transform}; transform-origin: 50% 0px 0px;pointer-events: ${
-                            flowtype != 'create' ? 'none' : 'auto'
+                            flowtype != 'create' ? 'auto' : 'auto'
                         };`"
                     >
-                        <Node v-for="(item, index) in items" :key="index" :node="item" @addnode="addnode" @delNode="delNode(item)" />
+                        <Node
+                            v-for="(item, index) of items"
+                            :key="index"
+                            :node="item"
+                            @addnode="addnode"
+                            @delNode="delNode(item)"
+                            :workflowtype="workflowType1"
+                            ref="nodeTem"
+                        />
                         <EndNode />
                         <a-modal title="预览" :visible="viewModal" @cancel="handleCancel">
                             <pre>{{ JSON.stringify(data1.node, null, 4) }}</pre>
@@ -103,9 +112,9 @@ export default {
             type: String,
             default: '工作流'
         },
-        workflowtype: {
+        workflowType1: {
             type: String,
-            default: ''
+            default: 'create'
         }
     },
     data: () => ({
@@ -146,40 +155,36 @@ export default {
     }),
     watch: {
         data: {
-            handler(val, newval) {
-                if (!val.node) {
-                    val.node = defaultData;
+            handler(newval, oldval) {
+                if (!newval.node) {
+                    newval.node = defaultData;
                 }
-                this.data1.node = val.node;
+                this.data1 = {};
+                this.data1 = { node: newval.node };
                 this.iteratorData(this.data1.node);
             },
             deep: true
         },
-        workflowtype: {
-            handler(val, newval) {
-                console.log(val);
-            },
-            deep: true
+        workflowType1(val, newval) {
+            this.$bus.$emit('workFlowType', 'create');
         }
     },
-    beforeCreate() {},
-    created() {
-        let that = this;
-        that.$nextTick(function () {
-            this.$bus.$on('workFlowType', (data) => {
-                that.flowtype = data;
-                console.log(data);
-            });
-        });
+    beforeUpdate() {
+        console.log('workflowtype1111', this.workflowType1);
     },
     mounted() {
         if (this.data && this.data.node) {
             this.data1 = this.data;
+            this.iteratorData(this.data1.node);
         }
+        let that = this;
+        this.$bus.$on('workFlowType', (data) => {
+            that.flowtype = data;
+        });
         // if (!this.data1.node) {
-        this.initialNode();
+        // this.initialNode();
         // }
-        this.iteratorData(this.data1.node);
+        // this.iteratorData(this.data1.node);
     },
     methods: {
         initialNode() {
@@ -200,7 +205,6 @@ export default {
             iteratorData(this.items, data);
         },
         addnode(node) {
-            // console.log('添加节点:' + node.nodeId)
             addNewNode(node, this.data1.node, this.items);
             this.key++;
         },
@@ -210,8 +214,6 @@ export default {
             this.key++;
 
             // this.iteratorData(this.data1.node)
-            // console.log(this.data1.node)
-            // console.log(this.items)
         },
         save() {
             console.log('最外层', this.data1);

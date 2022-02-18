@@ -3,7 +3,7 @@
         <div class="auto-judge node_8f5e_917f">
             <div class="sort-left">&lt;</div>
             <div class="title-wrapper">
-                <span style="float: right; color: white" @click="delConditionNode">X</span>
+                <span style="float: right; color: white" @click="delConditionNode" v-show="workflowtype != 'read'">X</span>
                 <input
                     type="text"
                     v-model="node.name"
@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <AddNodeBtn :node="node" @addnode="addnode" />
+        <AddNodeBtn :node="node" @addnode="addnode" v-show="workflowtype != 'read'" />
         <!-- <AddNodeCondition :show.sync="show" :properties="node.properties" :parentNode="node" @on-success="setPropertiesOK" /> -->
         <AddNodeApprover
             v-if="node.type != 'back' && node.type != 'recall'"
@@ -51,6 +51,10 @@ export default {
         node: {
             type: Object,
             default: undefined
+        },
+        workflowtype: {
+            type: String,
+            default: 'create'
         }
     },
     data: () => ({

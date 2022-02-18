@@ -10,7 +10,7 @@ module.exports = {
     // },
     proxy: {
       '/api': {
-        target: 'http://192.168.1.109:802/',
+        target: 'http://47.103.110.240:9088/',
         secure: false,
         changOrigin: true,
       },
@@ -25,7 +25,7 @@ module.exports = {
     loaderOptions: {
       less: {
         modifyVars: {
-          'primary-color': '#13c2c2',
+          'primary-color': '#1890ff',
           'layout-color': '#9867f7'
         },
         javascriptEnabled: true

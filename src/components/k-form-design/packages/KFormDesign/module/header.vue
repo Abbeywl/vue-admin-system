@@ -6,7 +6,10 @@
  * @LastEditTime: 2020-03-26 20:18:56
  -->
 <template>
-    <header class="header"><a-input placeholder="请输入表单名称" v-model="title" @change="titleChange(false)" /></header>
+    <header class="header">
+        <a-input placeholder="请输入表单名称" v-model="title" @change="titleChange(false)" />
+        <a-button @click="$emit('handleSave')">保存</a-button>
+    </header>
 </template>
 <script>
 export default {
@@ -32,8 +35,11 @@ export default {
 </script>
 <style scoped>
 .header {
-    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 }
+
 input {
     text-align: center;
     width: 300px;

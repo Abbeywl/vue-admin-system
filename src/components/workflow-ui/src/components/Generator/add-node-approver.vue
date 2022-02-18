@@ -1,8 +1,6 @@
 <template>
     <div id="SIDE_MODAL">
         <div v-if="dialog1" class="side-modal-wrapper">
-            <!-- <div class="side-modal-mask" /> -->
-            <!-- <div class="side-modal"> -->
             <a-drawer placement="right" :closable="false" :visible="dialog1" @close="onClose" :width="720">
                 <div class="side-modal-header">
                     <div class="ant-row-flex ant-row-flex-middle editable-text-field">
@@ -135,7 +133,6 @@
                     </button>
                 </div>
             </a-drawer>
-            <!-- </div> -->
             <addUserModal ref="addUserModal" :visible="visible" @selectFun="selectFun" />
         </div>
     </div>
@@ -185,12 +182,7 @@ export default {
                 roleList: []
             },
             setCheckType: [],
-            setCheckVal: {
-                // submit: '提交',
-                // draft: '草稿',
-                // recall: '撤回',
-                // urged: '催办'
-            }
+            setCheckVal: {}
         },
         submitVal: '提交',
         draftVal: '草稿',
@@ -209,7 +201,9 @@ export default {
             if (val) this.setValue();
         },
         properties: {
-            handler(val) {},
+            handler(val) {
+                this.properties1 = val;
+            },
             deep: true
         }
     },
@@ -223,6 +217,8 @@ export default {
     },
     methods: {
         setValue() {
+            this.targetRoleKeys = [];
+            this.targetUserKeys = [];
             if (this.properties1.setCheckVal) {
                 this.submitVal = !this.properties1.setCheckVal.submit ? this.submitVal : this.properties1.setCheckVal.submit;
                 this.draftVal = !this.properties1.setCheckVal.draft ? this.draftVal : this.properties1.setCheckVal.draft;

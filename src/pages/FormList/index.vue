@@ -12,7 +12,14 @@
             </a-col>
         </a-row>
         <a-row v-show="isAdd">
-            <k-form-design toolbarsTop :showHead="true" style="height: 100%" @save="handleSave" ref="kfd" />
+            <k-form-design
+                toolbarsTop
+                :showHead="true"
+                style="height: 100%"
+                @save="handleSave"
+                ref="kfd"
+                :toolbars="['save', 'preview', 'importJson']"
+            />/>
         </a-row>
         <a-row v-show="!isAdd">
             <a-table
@@ -28,10 +35,10 @@
                     <!-- <a class="" @click="operationEdit(record)">编辑</a>
                     <a-divider type="vertical" /> -->
                     <a class="" @click="operationDelete(record)">删除</a>
-                    <a-divider type="vertical" />
+                    <!-- <a-divider type="vertical" />
                     <a class="" @click="operationRead(record)">表单发起</a>
-                    <a-divider type="vertical" />
-                    <a class="" @click="operationHistory(record)">历史记录</a>
+                    <a-divider type="vertical" /> -->
+                    <!-- <a class="" @click="operationHistory(record)">历史记录</a> -->
                 </template>
             </a-table>
         </a-row>
@@ -142,8 +149,7 @@ export default {
     watch: {},
     methods: {
         AddFn() {
-            if (!this.isAdd) this.GetFormListFn();
-
+            this.GetFormListFn();
             this.isAdd = !this.isAdd;
         },
         handleSave(values) {

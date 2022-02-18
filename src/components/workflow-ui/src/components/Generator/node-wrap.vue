@@ -1,7 +1,7 @@
 <template>
     <div class="node-wrap">
-        <NodeWrapBox :node="node" @delNode="delNode" />
-        <AddNodeBtnBox :node="node" @addnode="addnode" />
+        <NodeWrapBox :node="node" @delNode="delNode" :workflowtype="workflowtype" />
+        <AddNodeBtnBox :node="node" @addnode="addnode" :workflowtype="workflowtype" />
     </div>
 </template>
 <script>
@@ -17,18 +17,23 @@ export default {
         node: {
             type: Object,
             default: undefined
+        },
+        workflowtype: {
+            type: String,
+            default: 'create'
         }
     },
-    watch: {
-        node: {
-            handler(val) {},
-            deep: true
-        }
-    },
+    // watch: {
+    //     node: {
+    //         handler(newName, oldName) {
+    //             console.log('node-wrap', newName);
+    //             console.log('node-wrap oldName', oldName);
+    //         },
+    //         deep: true
+    //     }
+    // },
     methods: {
         addnode(node) {
-            // console.log('node-wrap 新节点:')
-            // console.log(node)
             this.$emit('addnode', node);
         },
         delNode() {

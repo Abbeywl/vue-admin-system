@@ -1,14 +1,15 @@
 <template>
     <div class="main">
-        <a-row v-show="!isShow">
-            <a-col :span="18" class="btn_group">
+        <a-row v-show="!isShow" style="padding-bottom: 10px">
+            <a-col :span="21" class="btn_group">
                 <!-- <a-button @click="showModal" type="primary"> 新增 </a-button> -->
             </a-col>
 
-            <a-col :span="6" class="search">
+            <a-col :span="3" class="search">
                 <a-input-search placeholder="搜索" style="width: 200px" @search="onSearch" />
             </a-col>
         </a-row>
+
         <a-row v-show="!isShow">
             <a-table :columns="columns" :data-source="data" rowKey="ID">
                 <template slot="action" slot-scope="record" class="oprea">
@@ -55,7 +56,7 @@
             </template>
             <k-form-build :value="jsonData" ref="kfb" v-show="visible && type != 'history'" :dynamicData="dynamicData" />
             <div v-show="isflowShow" style="position: relative; height: 60vh">
-                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" :workflowtype.sync="flowtype" />
+                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" :workflowType1.sync="flowtype" />
             </div>
             <a-table
                 v-show="type == 'history'"
@@ -109,7 +110,7 @@
         </a-modal>
         <a-modal title="查看流fd程" :visible="isShow" @cancel="isShow = false" :width="'80vw'" :dialog-style="{ top: '20px' }">
             <div v-show="isShow" style="position: relative; height: 60vh">
-                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" />
+                <workflow :data.sync="flowData" :title="ProcessTitle" @ok="flowSave" :workflowType1.sync="flowtype" />
             </div>
         </a-modal>
     </div>
@@ -224,16 +225,19 @@ export default {
             this.modalwidth = '80vw';
             switch (type) {
                 case 'send':
+                    this.modalwidth = '820px';
                     this.GetFlowStartNodeBtnFn(ID);
                     this.type = 'send';
                     this.visible = !this.visible;
-                    that.$nextTick(function () {
-                        this.$bus.$emit('workFlowType', 'read');
-                    });
-                    this.isflowShow = true;
+                    // that.$nextTick(function () {
+                    //     this.flowtype = 'read';
+                    //     this.$bus.$emit('workFlowType', 'read');
+                    // });
+                    this.isflowShow = false;
                     break;
                 default:
                     this.visible = false;
+                    this.flowtype = 'read';
                     that.$nextTick(function () {
                         this.$bus.$emit('workFlowType', 'read');
                     });
@@ -435,8 +439,11 @@ export default {
                 case 'delete':
                     break;
                 default:
-                    this.$bus.$emit('workFlowType', 'read');
                     this.visible = false;
+                    this.$nextTick(function () {
+                        this.$bus.$emit('workFlowType', 'read');
+                    });
+
                     let ProcessXmlJson = JSON.parse(ProcessXml);
                     this.flowData = { node: ProcessXmlJson };
                     this.isShow = true;
@@ -514,5 +521,3 @@ export default {
     }
 };
 </script>
-
-</style>

@@ -5,6 +5,7 @@
             :node.sync="node"
             @addnode="addnode"
             @delNode="delNode"
+            :workflowtype="workflowtype"
         />
         <ConditionNode
             v-if="node.type == 'condition' || node.type == 'conditionShunt'"
@@ -12,6 +13,7 @@
             @addnode="addnode"
             @delConditionNode="delConditionNode"
             @addConditionFactor="addConditionFactor"
+            :workflowtype="workflowtype"
         />
         <!-- <ShuntNode
             v-if="node.type == 'shunt'"
@@ -20,7 +22,14 @@
             @delConditionNode="delConditionNode"
             @addConditionFactor="addConditionFactor"
         /> -->
-        <BranchWrap v-if="node.type == 'route' || node.type == 'shunt'" :node.sync="node" @addnode="addnode" @delNode="delNode" />
+
+        <BranchWrap
+            v-if="node.type == 'route' || node.type == 'shunt'"
+            :node.sync="node"
+            @addnode="addnode"
+            @delNode="delNode"
+            :workflowtype="workflowtype"
+        />
         <BackNode v-if="node.type == 'back' || node.type == 'recall'" :node.sync="node" @addnode="addnode" @delNode="delNode" />
     </div>
 </template>
@@ -43,18 +52,27 @@ export default {
         node: {
             type: Object,
             default: undefined
+        },
+        workflowtype: {
+            type: String,
+            default: 'create22'
         }
     },
-    watch: {
-        node: {
-            handler(val) {},
-            deep: true
-        }
+    mounted() {
+        console.log('mounted', this.workflowtype);
+        // this.$bus.$on('workFlowType', (data) => {
+        //     this.flowtype = data;
+        //     console.log('===', data);
+        // });
     },
-    mounted() {},
-    data: () => ({
-        flowtype: ''
-    }),
+    data() {
+        return {
+            flowtype: ''
+        };
+    },
+    beforeUpdate() {
+        console.log('beforeUpdate', this.workflowtype);
+    },
     methods: {
         addnode(node) {
             this.$emit('addnode', node);
@@ -68,8 +86,13 @@ export default {
         addConditionFactor(node) {
             this.$emit('addConditionFactor', node);
             this.node = node;
-            // console.log(this.node)
         }
+    },
+    beforeCreate() {
+        this.$bus.$on('workFlowType', (data) => {
+            this.flowtype = data;
+            console.log('===', data);
+        });
     }
 };
 </script>

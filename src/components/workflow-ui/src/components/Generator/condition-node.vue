@@ -6,6 +6,7 @@
             @delConditionNode="delConditionNode"
             @addConditionFactor="addConditionFactor"
             @updateCondition="updateCondition"
+            :workflowtype="workflowtype"
         />
     </div>
 </template>
@@ -28,6 +29,17 @@ export default {
         node: {
             type: Object,
             default: undefined
+        },
+        workflowtype: {
+            type: String,
+            default: 'create'
+        }
+    },
+    watch: {
+        workflowtype: {
+            handler(newval, oldval) {
+                console.log(newval, oldval);
+            }
         }
     },
     methods: {
@@ -44,10 +56,6 @@ export default {
             this.$emit('updateCondition', node);
         }
     },
-    mounted() {
-        this.$bus.$on('flowtype', (data) => {
-            console.log('数据加载完flowtype', data);
-        });
-    }
+    mounted() {}
 };
 </script>
