@@ -12,7 +12,7 @@
                     :label-col="labelCol"
                     :wrapper-col="wrapperCol"
                 >
-                    <div class="ms-title">后台管理系统</div>
+                    <div class="ms-title">方联智慧应用系统</div>
                     <a-form-model-item label="用户名" prop="UserName" ref="UserName">
                         <a-input v-model="param.UserName" placeholder="用户名">
                             <a-icon slot="prefix" type="user" style="color: rgba(0, 0, 0, 0.25)" />
